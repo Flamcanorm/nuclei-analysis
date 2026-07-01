@@ -1,0 +1,12 @@
+views:
+  - type: table
+    name: 표
+    order:
+      - file.name
+      - 유형
+      - 상태
+    columnSize:
+      file.name: 207
+      note.유형: 229
+  - type: list
+    name: 뷰
