@@ -1,12 +1,23 @@
+properties:
+  note.유형:
+    displayName: 구분
 views:
   - type: table
     name: 표
     order:
       - file.name
+      - 상세
       - 유형
       - 상태
+      - file.mtime
+    sort:
+      - property: file.name
+        direction: ASC
+      - property: 유형
+        direction: DESC
     columnSize:
       file.name: 207
+      note.상세: 297
       note.유형: 229
   - type: list
     name: 뷰

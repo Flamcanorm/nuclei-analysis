@@ -1,5 +1,5 @@
 ---
-유형: Internal
-상태: 진행중
+유형: Internal_Pack
+상태: false
 ---
 github.com/projectdiscovery/nuclei/v3/pkg/types

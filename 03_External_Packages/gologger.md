@@ -1,5 +1,5 @@
 ---
-유형: External
-상태: 진행중
+유형: External_Pack
+상태: false
 ---
 github.com/projectdiscovery/gologger
