@@ -17,6 +17,13 @@
 	- 이 변수 내부에는 로그 출력을 담당하는 [gologger.Logger](../03_External_Packages/gologger.md#Logger%20Struct) 인스턴스의 주소 (`gologger.Logger`)도 포함됨
 - **참조 :**  [pkg/types](../02_Internal_Packages/pkg_types.md#types.go), [gologger](../03_External_Packages/gologger.md)
 
+## inlineSecretsTempFiles #박영현 
+```go
+inlineSecretsTempFiles []string
+```
+> 
+- **타입 :** `[]string` (문자열)
+- **설명 :** 
 # 지역변수 #main/localVar
 
 
