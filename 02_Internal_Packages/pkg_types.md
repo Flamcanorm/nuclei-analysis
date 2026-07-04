@@ -2,14 +2,14 @@
 유형: Internal_Pack
 상태: false
 ---
-# types.go #박영현
+# types.go 
 > [nuclei/pkg/types/types.go](https://github.com/projectdiscovery/nuclei/blob/main/pkg/types/types.go)
 > Nuclei 실행 옵션을 위한 코드입니다.
 
 ## type Options struct #pkg/types/struct
 > Nuclei의 실행 설정을 담는 데이터 구조체입니다. 
 
-### Logger
+### Logger #박영현 #pkg/types/struct/Logger
 
 ```go
 // Logger is the gologger instance for this optionset

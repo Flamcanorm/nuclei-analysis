@@ -1,10 +1,11 @@
 ---
 상태: false
 유형:
+상세: main.go 변수들
 ---
 # 전역변수 #main/globalVar 
 
-## options #박영현
+## options #박영현 #main/globalVar/options
 ```go
 	options                = &types.Options{}
 ```
