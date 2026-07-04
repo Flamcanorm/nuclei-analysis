@@ -1,1 +1,5 @@
-{}
+{
+  "showInlineTitle": true,
+  "showLineNumber": true,
+  "readableLineLength": false
+}
