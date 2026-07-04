@@ -1,6 +1,7 @@
 ---
 유형: Internal_Pack
 상태: false
+상세: Nuclei 데이터 타입
 ---
 # types.go 
 > [nuclei/pkg/types/types.go](https://github.com/projectdiscovery/nuclei/blob/main/pkg/types/types.go)

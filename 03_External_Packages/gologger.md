@@ -1,6 +1,7 @@
 ---
 유형: External_Pack
 상태: false
+상세: 로그 출력 패키지
 ---
 # gologger.go #ExternalPackages/gologger
 > [gologger package code](https://github.com/projectdiscovery/gologger/blob/main/gologger.go)
