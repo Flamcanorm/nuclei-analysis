@@ -7,3 +7,5 @@
 ```go
 options.Logger = gologger.DefaultLogger
 ```
+> `optoins.Logger` 인스턴스에 `gologger.DefaultLoger` 값 할당
+> 

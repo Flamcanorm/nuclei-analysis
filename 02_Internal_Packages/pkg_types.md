@@ -7,6 +7,9 @@
 > Nuclei 실행 옵션을 위한 코드입니다.
 
 ## type Options struct #pkg/types/struct
+```go
+type Options struct
+```
 > Nuclei의 실행 설정을 담는 데이터 구조체입니다. 
 
 ### Logger #박영현 #pkg/types/struct/Logger
