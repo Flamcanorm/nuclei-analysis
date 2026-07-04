@@ -2,9 +2,9 @@
 상태: false
 유형:
 ---
-# 전역변수 #main/globalVar
+# 전역변수 #main/globalVar 
 
-## options 
+## options #박영현
 ```go
 	options                = &types.Options{}
 ```
