@@ -8,4 +8,5 @@
 options.Logger = gologger.DefaultLogger
 ```
 > `optoins.Logger` 인스턴스에 `gologger.DefaultLoger` 값 할당
-> 
+> `gologger.DefaultLogger`는 `gologger.go`의 `init` 함수에서 정의됨
+
