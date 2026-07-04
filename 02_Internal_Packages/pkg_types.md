@@ -18,5 +18,5 @@
 
 - **타입 :** `*gologger.Logger`
 - **설명 :** 터미널에 로그를 출력하는 전역 로거 인스턴스
-- **참조 :** [gologger](gologger.md)
+- **참조 :** [gologger](../03_External_Packages/gologger.md)
 
