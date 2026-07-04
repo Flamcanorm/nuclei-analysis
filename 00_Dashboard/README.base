@@ -11,6 +11,8 @@ views:
       - 상태
       - file.mtime
     sort:
+      - property: file.mtime
+        direction: ASC
       - property: file.name
         direction: ASC
       - property: 유형
