@@ -3,7 +3,7 @@
 유형:
 상태: false
 ---
-26.07.02 - 전지성
+## 26.07.02 - 전지성
 
 > [!readConfig 함수 전체 구조]
 > readConfig()
@@ -22,7 +22,10 @@
 > │
 > └── Filtering 그룹 생성
 
-> [!main.go 구조체]
+> [!main.go에서 사용되는 구조체]
+> 
+> pkg/mod/github.com/projectdiscovery/goflags@v0.1.74/goflags.go
+> 
 > // FlagSet is a list of flags for an application
 > 
 > type FlagSet struct {
@@ -287,8 +290,6 @@ func readConfig() *goflags.FlagSet { // 251~727줄
 
 > [!함수 반환]
 > 반환 타입 `goflags.FlagSet`만 → `github.com/projectdiscovery/goflags`
-
-
 
 ```
 	// readConfig 함수 안에서만 사용할 임시 변수들  
@@ -729,3 +730,5 @@ func readConfig() *goflags.FlagSet { // 251~727줄
 > -pt     → options.Protocols
 > -ept    → options.ExcludeProtocols
 > -tc     → options.IncludeConditions
+
+## 26.07.03 - 전지성

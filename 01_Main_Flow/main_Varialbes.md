@@ -19,4 +19,4 @@
 # 지역변수 #main/localVar
 
 
-
+# 구조체 #main/struct
