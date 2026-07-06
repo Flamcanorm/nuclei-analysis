@@ -27,6 +27,6 @@ type Options struct
 > 터미널에 로그를 출력하는 `gologger.Logger` 의 주소 값을 가지는 구조체 멤버 변수
 - **타입 :** `*gologger.Logger` (포인터)
 - **설명 :** 
-	- 외부 패키지 `gologger`에 정의된 [gologger.Logger](../03_External_Packages/gologger/gologger.go.md#Logger%20struct) 주소 값을 가지는 멤버 변수
-- **참조 :** [gologger.go](../03_External_Packages/gologger/gologger.go.md)
+	- 외부 패키지 `gologger`에 정의된 [gologger.Logger](../../03_External_Packages/gologger/gologger.go.md#Logger%20struct) 주소 값을 가지는 멤버 변수
+- **참조 :** [gologger.go](../../03_External_Packages/gologger/gologger.go.md)
 
