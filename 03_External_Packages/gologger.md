@@ -93,7 +93,7 @@ func init() {
 	- main 함수보다 먼저 실행됨
 	- `DefaultLogger = &Logger{}` : [Logger](gologger.md#Logger%20struct) 인스턴스를 생성하고 주소를 [DefaultLogger](gologger.md#DefaultLogger)에 저장
 	- `DefaultLogger.SetMaxLevel(levels.LevelInfo)` : [SetMaxLevel](gologger.md#SetMaxLevel) 매서드를 호출하여 `Default` 로거의 `maxLevel` 변경
-	- `DefaultLogger.SetFormatter(formatter.NewCLI(false))` : [SetFormatter](gologger.md#SetFormatter) 메서드를 호출하여 
+	- `DefaultLogger.SetFormatter(formatter.NewCLI(false))` : [SetFormatter](gologger.md#SetFormatter) 메서드를 호출하여 #미완성 gologger/formatter/cli.go 
 
 
 ### SetMaxLevel #박영현 
@@ -118,8 +118,14 @@ func (l *Logger) SetFormatter(formatter formatter.Formatter) {
 	l.formatter = formatter
 }
 ```
-> #미완성 gologger/formatter 
+> `Logger`가 사용할 로그 포맷을 설정하는 메서드
 
+- **매개 변수 :** formatter ([Formatter interface](gologger.md#Formatter%20interface) 타입)
+- **반환 타입 :** 없음
+- **형태 :** 메서드
+- **설명 :** 
+	- `Formatter` 인터페이스에 해당하는 `formatter`를 매개 변수로 받아 `l`에 저장된 [Logger](gologger.md#Logger%20struct) 포인터의 `formatter` 에 저장
+	- 로그를 출력할 포맷 형식에 맞게 포맷을 정할 수 있음
 
 # levels.go #ExternalPackages/gologger
 > [levels.go code](https://github.com/projectdiscovery/gologger/blob/main/levels/levels.go)
@@ -190,7 +196,7 @@ type Formatter interface {
 
 - **설명 :** 
 	- 어떤 구조체가 `Format(event *LogEvent) ([]byte, error)` 형태의 매서드를 가진 경우 Formatter 인터페이스에 해당 (묵시적)
-	- `Format` 메서드는 로그 이벤트 데이터를 바이트로 변환하는 메서드
+	- `Format` 메서드는 [LogEvent](gologger.md#LogEvent%20struct) 데이터를 바이트로 변환하는 메서드
 
 ### LogEvent struct #박영현 
 ```go
@@ -202,4 +208,7 @@ type LogEvent struct {
 }
 ```
 > 로그 이벤트 정보를 정의한 구조체
+- **참조 :** [levels.go](gologger.md#levels.go%20ExternalPackages/gologger) (`levels.Level` 타입 정의)
+
+
 
