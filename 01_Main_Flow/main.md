@@ -3,7 +3,8 @@
 유형:
 상세: Nuclei 전체 실행 흐름
 ---
-# L58 #박영현 #L58 
+# L58 
+#박영현 #L58 
 ```go
 options.Logger = gologger.DefaultLogger
 ```
@@ -14,7 +15,8 @@ options.Logger = gologger.DefaultLogger
 
 **참조 :** [options.Logger](../02_Internal_Packages/pkg_types.md#Logger), [gologger.DefaultLogger](../03_External_Packages/gologger.md#DefaultLogger)
 
-# L60 #박영현 #L60 
+# L60
+#박영현 #L60 
 ```go
 defer func() {
 		for _, f := range inlineSecretsTempFiles {
@@ -35,7 +37,8 @@ defer func() {
 	- `os`는 Go 언어의 표준 라이브러리로 `os.Remove()`는 괄호 안에 있는 경로의 파일이나 폴더를 하드디스크에서 삭제하는 명령어
 
 
-# L67 #박영현 #L67
+# L67
+#박영현 #L67
 ```go
 // enables CLI specific configs mostly interactive behavior
 	config.CurrentAppMode = config.AppModeCLI

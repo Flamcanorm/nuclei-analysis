@@ -3,10 +3,12 @@
 유형:
 상세: main.go 변수들
 ---
-# 전역변수 #main/globalVar 
+# 전역변수 
+#main/globalVar 
 > main.go 전역변수
 
-## options #박영현
+## options
+#박영현
 ```go
 	options                = &types.Options{}
 ```
@@ -18,14 +20,16 @@
 	- 이 변수 내부에는 로그 출력을 담당하는 [gologger.Logger](../03_External_Packages/gologger.md#Logger%20Struct) 인스턴스의 주소 (`gologger.Logger`)도 포함됨
 - **참조 :**  [pkg/types](../02_Internal_Packages/pkg_types.md#types.go), [gologger](../03_External_Packages/gologger.md)
 
-## inlineSecretsTempFiles #박영현 
+## inlineSecretsTempFiles
+#박영현 
 ```go
 inlineSecretsTempFiles []string
 ```
 > 검사 과정에서 임시로 생성된 중요 정보를 저장하는 변수
 - **타입 :** `[]string` (문자열)
 - **설명 :** 검사 과정에서 임시로 생성된 중요 정보를 저장하는 변수
-# 지역변수 #main/localVar
+# 지역변수
+#main/localVar
 
 
 

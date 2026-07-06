@@ -7,7 +7,8 @@
 > [nuclei/pkg/types/types.go](https://github.com/projectdiscovery/nuclei/blob/main/pkg/types/types.go)
 > Nuclei 실행 옵션을 위한 코드
 
-## type #pkg/types/type
+## type
+#pkg/types/type
 
 ### Options struct
 ```go
@@ -16,7 +17,8 @@ type Options struct
 ```
 > Nuclei의 실행 설정을 담는 데이터 구조체
 
-#### Logger #박영현
+#### Logger
+#박영현
 
 ```go
 // Logger is the gologger instance for this optionset
