@@ -228,7 +228,7 @@ type LogEvent struct {
 }
 ```
 > 로그 이벤트 정보를 정의한 구조체
-- **참조 :** [levels.go](gologger.md#levels.go%20ExternalPackages/gologger) (`levels.Level` 타입 정의)
+- **참조 :** [levels.go](gologger.md#levels.go) (`levels.Level` 타입 정의)
 
 
 
