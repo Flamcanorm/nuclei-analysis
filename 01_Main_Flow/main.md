@@ -13,7 +13,7 @@ options.Logger = gologger.DefaultLogger
 - **설명 :** 
 	- `options` 는 Nuclei의 옵션을 설정하는 구조체로 `options.Logger` 필드에 외부 패키지 `gologger` 에서 정의되고 기본값으로 초기화 된 `gologger.DefaultLogger` 를 저장
 
-**참조 :** [options.Logger](../02_Internal_Packages/pkg_types.md#Logger), [gologger.DefaultLogger](../03_External_Packages/gologger.md#DefaultLogger)
+**참조 :** [options.Logger](../02_Internal_Packages/pkg_types.md#Logger), [gologger.DefaultLogger](../03_External_Packages/gologger/gologger.go.md#DefaultLogger)
 
 # L60
 #박영현 #L60 
