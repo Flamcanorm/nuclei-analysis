@@ -29,7 +29,7 @@ labels = map[levels.Level]string{
 		levels.LevelVerbose: "VER",
 	}
 ```
-> 로깅 레벨 문자열과 매핑
+> 로그 레벨 문자열과 매핑
 
 - **타입 :** `map[levels.Level]string` 
 - **설명 :** 
@@ -63,7 +63,14 @@ type Logger struct
 ```go
 maxLevel          levels.Level
 ```
-> 로깅 레벨의 최댓값을 저장하는 멤버 변수 ([levels.go](gologger.md#levels.go) 에 정의됨)
+> 로그 최대 허용 레벨을 저장하는 멤버 변수 ([levels.go](gologger.md#levels.go) 에 정의됨)
+
+
+#### formatter #박영현 
+```go
+formatter         formatter.Formatter
+```
+> 로그 출력 인터페이스 ([Formatter interface](gologger.md#Formatter%20interface))
 
 
 ## func #ExternalPackages/gologger/func
@@ -116,7 +123,7 @@ func (l *Logger) SetFormatter(formatter formatter.Formatter) {
 
 # levels.go #ExternalPackages/gologger
 > [levels.go code](https://github.com/projectdiscovery/gologger/blob/main/levels/levels.go)
-> 로깅 레벨이 정의된 코드
+> 로그 레벨이 정의된 코드
 
 ## type #ExternalPackages/gologger/type
 
@@ -141,7 +148,7 @@ const (
 	LevelVerbose
 )
 ```
-> 각 로깅 레벨별로 정수 숫자 상수로 지정
+> 각 로그 레벨별로 정수 숫자 상수로 지정
 - **타입 :** `Level` 타입 상수
 - **설명 :** `iota` 키워드를 사용해 `LevelFatal` 은 `Level` 타입으로 숫자 0, `LevelSilent`는 1, `LevelError`는 2, ... 각 레벨 차례로 정의
 
@@ -181,14 +188,18 @@ type Formatter interface {
 ```
 > 로그를 출력할 포맷 인터페이스
 
+- **설명 :** 
+	- 어떤 구조체가 `Format(event *LogEvent) ([]byte, error)` 형태의 매서드를 가진 경우 Formatter 인터페이스에 해당 (묵시적)
+	- `Format` 메서드는 로그 이벤트 데이터를 바이트로 변환하는 메서드
 
 ### LogEvent struct #박영현 
 ```go
-// LogEvent is the respresentation of a single event to be logged.
+// LogEvent is the representation of a single event to be logged.
 type LogEvent struct {
 	Message  string
 	Level    levels.Level
 	Metadata map[string]string
 }
 ```
-> 
+> 로그 이벤트 정보를 정의한 구조체
+

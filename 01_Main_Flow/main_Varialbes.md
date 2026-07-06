@@ -4,6 +4,7 @@
 상세: main.go 변수들
 ---
 # 전역변수 #main/globalVar 
+> main.go 전역변수
 
 ## options #박영현
 ```go
