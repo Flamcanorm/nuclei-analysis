@@ -52,5 +52,5 @@ type Config struct {
 ```
 > Nuclei 설정 값을 저장하기 위한 구조체
 > 탬플릿 관련 경로, 버전 및 검사 제외 항목, 최선 버전 캐시 검사, json 파일로 검사할 때 설정 구조체 태크, 고루틴을 위한 뮤텍스 락
-
+- **참고 :** MutexLock ([mutexLock](../../../04_etc/mutexLock.md))
 ## func
