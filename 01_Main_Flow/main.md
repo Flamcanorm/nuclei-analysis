@@ -14,7 +14,7 @@ options.Logger = gologger.DefaultLogger
 	- `options` 는 Nuclei의 옵션을 설정하는 구조체로 `options.Logger` 필드에 외부 패키지 `gologger` 에서 정의되고 기본값으로 초기화 된 `gologger.DefaultLogger` 를 저장
 
 
-**참조 :** [options.Logger](../02_Internal_Packages/pkg_types/types.go.md#Logger), [gologger.DefaultLogger](../03_External_Packages/gologger/gologger.go.md#DefaultLogger)
+**참조 :** [options](main_Varialbes.md#options), [gologger.DefaultLogger](../03_External_Packages/gologger/gologger.go.md#DefaultLogger)
 
 # L60
 #박영현 #L60 
@@ -57,6 +57,6 @@ if err := runner.ConfigureOptions(); err != nil {
 	_ = readConfig()
 ```
 > Nuclei 실행 설정 값을 불러오고 에러가 발생하면 `Fatal` 메세지를 출력하고 즉시 종료
-> 에러가 발생하지 않은 경우 `readConfig()` 함수로 설정 값 및 플래그 읽어옴 (읽어오며 발생한 에러에 대해 결과를 가져오지 않으나 `readConfig() 함수 내부에서 에러에 대한 대처가 정의됨)
+> 에러가 발생하지 않은 경우 `readConfig()` 함수로 설정 값 및 플래그 읽어옴 (읽어오며 발생한 에러에 대해 결과를 가져오지 않으나 `readConfig()` 함수 내부에서 에러에 대한 대처가 정의됨)
 #미완성 `readConfig()`, internal/runner
 
