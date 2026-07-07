@@ -58,6 +58,5 @@ if err := runner.ConfigureOptions(); err != nil {
 ```
 > Nuclei 실행 설정 값을 불러오고 에러가 발생하면 `Fatal` 메세지를 출력하고 즉시 종료
 > 에러가 발생하지 않은 경우 `readConfig()` 함수로 설정 값 및 플래그 읽어옴 (읽어오며 발생한 에러에 대해 결과를 가져오지 않으나 `readConfig() 함수 내부에서 에러에 대한 대처가 정의됨)
-
-
+#미완성 `readConfig()`, internal/runner
 
