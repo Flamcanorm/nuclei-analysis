@@ -43,3 +43,4 @@ defer func() {
 // enables CLI specific configs mostly interactive behavior
 	config.CurrentAppMode = config.AppModeCLI
 ```
+>
