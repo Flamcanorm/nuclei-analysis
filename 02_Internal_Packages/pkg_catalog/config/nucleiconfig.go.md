@@ -1,5 +1,6 @@
 # nucleiconfig.go
 #pkg/config
+> Nuclei 실행 설정 정보가 정의됨
 
 ## var
 #pkg/config/var
