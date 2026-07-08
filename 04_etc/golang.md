@@ -7,11 +7,13 @@
 
 # 특징
 
+
 ## CSP(Communicating Sequential Processes) 방식의 Concurrent 지원
 
 - IPC 과정에서 서로 데이터를 주고 받는게 아닌 Channel 이라는 매개체를 통해서 메세지를 전달하며 통신하는 모델.
 - 메모리를 통해서 통신하지 않고 통신을 해서 메모리를 공유 (공유 메모리 방식은 Lock 등의 동기화 문제가 복잡하므로 메세지 패싱 방식을 사용한다는 뜻)
 - 기존의 메세지 패싱 방식의 사용자 모드와 커널 모드간의 전환 오버헤드가 Go 언어에선 Go 런타임이 사용자 영역에서 채널을 생성하기 때문에 오버헤드 없이 메모리 복사만으로 빠르게 통신이 가능.
+
 
 ## Goroutine 을 통한 매우 가벼운 비동기 Concurrent 처리 구현 
 >[goroutine](golang.md#goroutine)
@@ -21,11 +23,13 @@
 	- 이로 인해 goroutine 간의 Context Switching이나 채널을 통한 메세지 전달 시, 모드 전환의 오버헤드가 발생하지 않아 goroutine이 매우 많아도 빠르게 실행될 수 있다.
 
 
+
 ## 동적 스택 확장 (Dynamic Stack Growth)
 
 - [goroutine](golang.md#goroutine)이 생성될 때 2KB 크기의 아주 작은 스택을 가짐
 - 실행 중 스택 메모리가 더 필요해지면 Go 런타임에서 이를 감지하여 기존 스택의 크기를 2배 늘려 새로운 메모리 공간을 유저 영역에 할당하고 기존 데이터를 모두 복사하고 포인털르 이동시킴
 - 스택오버플로우 방지
+
 
 ## 네트워크 폴러 (Netpoller)를 통한 I/O 비동기 최적화
 
@@ -34,10 +38,14 @@
 - goroutine이 네트워크 대기가 발생한다면 해당 goroutine을 netpoller에게 전달하고 스레드는 다른 goroutine을 실행함
 - 개발자는 동기식으로 코드를 짜지만 내부적으로는 비동기 I/O가 작동하여 효율을 높임
 
+
 ## 동시 가비지 컬렉터 (Concurrent GC)
 
 - 가비지 컬렉터에 의해 모든 스레드가 멈추는 STW 현상을 막아줌 (아주 짧아짐)
 - 백그라운드에서 가비지 컬렉터를 실행하여 스레드가 멈추지 않고 계속 실행됨
+
+
+
 
 
 # goroutine
@@ -56,6 +64,9 @@ go say() // goroutine 키워드 go 를 사용해 say() 함수 실행
 	- 기존 스레드보다 많은 양의 스레드를 생성할 수 있어서 효율적임.
 - 기본적으로 1개의 CPU에서 처리하기 떄문에 동시성 (Concurrency) 임.
 	-  만약 여러 개의 CPU를 사용하려면 (Parallel), `runtime.GOMAXPROCS(cpu개수)` 함수를 호출하여야한다. (`cpu개수`는 Logical CPU 수를 의미)
+
+
+
 
 
 # gochannel
@@ -80,6 +91,8 @@ func main() {
 - 스레드 간의 통신할 때 별도의 Lock을 걸지 않아도 Go에서 자동으로 데이터를 동기화 시켜줌.
 	- 채널에서 데이터를 넣거나(`ch <- data`) 뺄 때(`<-ch`), 데이터가 준비될 때까지 goroutine이 알아서 대기(Block)함.
 	- 예를 들어 goroutine으로 스레드를 10개 만들어 이미지 10,000개를 처리한다면 메인 프로그램에서 이 작업이 모두 끝났는지 알 수 없어 먼저 종료되어 버릴 수 있으나 gochannel을 사용하여 10개의 스레드가 각자 작업이 끝날 때마다 `done` 메세지를 채널에 보낸다면, 메인 프로그램에서 채널에 `done` 메세지고 10개 모두 도착할 때까지 기다렸다가 프로그램을 종료할 수 있음.
+
+
 
 
 
@@ -122,6 +135,8 @@ func main() {
 
 
 
+
+
 ### 공정성
 >`G`의 실행시간이 매우 길어 다른 `G`들이 기아(Starve) 상태에 빠지거나 Convoy Effect가 발생한다면 어떻게 해결할 것인가
 
@@ -152,6 +167,9 @@ Go 런타임에 존재하는 Daemon thread로 `P`없이 `G`를 실행하며, gor
 
 어떤 `G`의 실행 시간이 10ms가 넘으면, 해당 `G`를 실행하고 있는 `M`에게 선점 signal을 보낸다. **선점 signal을 받은 `M`은 `G`를 [Global Run Queue](golang.md#Global%20Run%20Queue)에 보내게 된다.**
 
+
+
+
 #### goroutine locality
 
 `G`는 또 다른 `G`를 생성할 수 있다.
@@ -161,6 +179,8 @@ Go 런타임에 존재하는 Daemon thread로 `P`없이 `G`를 실행하며, gor
 큐를 사용하면 FIFO 방식으로 각 `G`가 동등하게 실행될 수 있으므로 공정하다. 하지만 locality 면에서 좋지 않다.
 
 방금 생성한 `G`를 다른 `G`를 전부 처리하고 나서 참조하기 때문에 프로세서의 캐시, 스택을 사용하지 못하기 때문이다.
+
+
 
 
 #### Time slice inheritance
@@ -186,6 +206,9 @@ locality 문제를 해결하가 위해 Go 스케줄러는 `G`가 만들어지면
 여기까지 이 방법으로 local runqueue의 기아 상태는 해결하겠지만, [Global Run Queue](golang.md#Global%20Run%20Queue)의 기아 상태는 해결하지 못한다. `M`이 [Global Run Queue](golang.md#Global%20Run%20Queue)의 `G`를 가져올 때는 [Local Run Queue](golang.md#Local%20Run%20Queue)가 비었을 때다. **즉, local runqueue에 항상 `G`가 존재한다면, global runqueue의 `G`를 절대 가져오지 않는다.**
 
 이를 해결하기 위해 Go scheduler는 **어떤 조건을 만족하면 global runqueue에서 `G`를 가져오게 된다.**
+
+
+
 
 #### schedtick
 >[Global Run Queue](golang.md#Global%20Run%20Queue)의 기아 상태를 방지하기 위해 Go 런타임은 일정 주기마다 반드시 Global Run Queue를 polling해 `G`를 가져온다.
@@ -229,6 +252,9 @@ go scheduler는 실행할 새로운 application을 불러들이거나, 실행할
 
 (이는 해시 맵에서 버킷의 크기를 소수로 정하는 것과 비슷하다)
 
+
+
+
 #### syscall block
 
 ![](../05_attachments/Pasted%20image%2020260709045851.png)
@@ -259,7 +285,10 @@ idle 상태의 `P`가 존재하지 않는다면 global queue에 넣는다.
 
 
 
+
+
 ### 스케줄러 관련
+
 #### GMP Model
 - **G (Goroutine) :** 고루틴 그 자체를 의미.
 	- 논리적인 실행 단위이며, goroutine의 상태(실행, 대기 등), 프로그램 카운터(PC), 그리고 자체적인 스택 포인터를 가지고 있는 구조체.
@@ -270,6 +299,7 @@ idle 상태의 `P`가 존재하지 않는다면 global queue에 넣는다.
 	- M이 G를 실행하기위해 반드시 P에 할당되어야함.
 
 
+
 #### Multiplexing 구조
 - *N*개의 gorountine을 *M*개의 OS 스레드에 매핑하는 **M:N 모델** 사용.
 - ![](../05_attachments/Pasted%20image%2020260709032909.png)
@@ -277,10 +307,14 @@ idle 상태의 `P`가 존재하지 않는다면 global queue에 넣는다.
 - `M`은 커널 스레드, `G`는 goroutine을 의미함. 일반적으로 `M`의 개수보다 `G`의 개수가 많음.
 
 
+
+
 #### 워크 스틸링 (Work Stealing)
 - 특정 스레드(***M***)가 자기 ***P***의 로컬 큐에 있던 ***G***를 모두 완료하여 idle 상태라면 다음의 순서로 ***G***를 가져온다. (Stealing)
 	- 1. ***Global Run Queu***에 ***G***가 있는지 확인하고 가져옴. (`global runqueue의 현재 길이/GOMAXPROCS +1` 만큼 가져옴)
 	- 2. 글로벌 큐가 비었다면, 다른 ***P***의 로컬 큐를 무작위로 조회하여 그곳에서 큐의 절반을 가져와 작업함.
+
+
 
 
 #### Hand-off Mechanism
@@ -292,6 +326,8 @@ idle 상태의 `P`가 존재하지 않는다면 global queue에 넣는다.
 	- 4. 나중에 시스템 콜을 마친 M1이 돌아와 빈 [P](golang.md#P%20구조체)가 있는지 찾고, 없다면 자신이 실행하던 G1을 글로벌 큐에 넣은 뒤 자신의 스레드 풀로 돌아가 대기함.
 
 
+
+
 #### GOMAXPROCS
 >The GOMAXPROCS variable limits the number of operating system threads that can execute user-level Go code simultaneously. There is no limit to the number of threads that can be blocked in system calls on behalf of Go code; those do not count against the GOMAXPROCS limit.
 
@@ -299,6 +335,7 @@ idle 상태의 `P`가 존재하지 않는다면 global queue에 넣는다.
 	- GOMAXPROCS가 6이라면, 코드를 실행하는 OS 스레드의 개수는 6개가 최대이다.
 	- system call로 block된 스레드는 GOMAXPROCS에 해당하지 않는다.
 		- 즉, 6개의 실행중인 스레드를 제외하고 block된 다른 많은 스레드를 가질 수 있다.
+
 
 
 
@@ -312,6 +349,8 @@ idle 상태의 `P`가 존재하지 않는다면 global queue에 넣는다.
 - ***P*** 구조체를 사용함으로써 block된 ***M***이 ***P***를 다른 ***M***에게 [Local Run Queue](golang.md#Local%20Run%20Queue)과 함께 넘겨줄 수 있다. 
 
 
+
+
 #### Local Run Queue 
 ![](../05_attachments/Pasted%20image%2020260709030821.png)
 - 모든 ***P*** 는 자신만의 로컬 큐를 가지고 있으며, 여기에 실행 대기 중인 ***G*** 들을 보관 (참고 : [P 구조체](golang.md#P%20구조체))
@@ -319,10 +358,14 @@ idle 상태의 `P`가 존재하지 않는다면 global queue에 넣는다.
 - ***M*** 이 다음 작업 (***G***)를 꺼낼 때, 자기 ***P***의 로컬 큐에서만 꺼내므로 여러 스레드가 동시에 접근할 때 발생하는 Lock Contention이 없어 속도가 매우 빠름
 
 
+
+
 #### Global Run Queue
 ![](../05_attachments/Pasted%20image%2020260709030720.png)
 - 로컬 큐가 꽉 차거나, 시스템 콜 이후 돌아온 ***G*** 들이 임시로 머무는 공유 큐
 - 모든 ***P***가 접근할 수 있으므로 Lock 이 작동하여 로컬 큐보다 속도가 느림
+
+
 
 
 #### netpoller
