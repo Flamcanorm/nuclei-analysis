@@ -103,6 +103,7 @@ func main() {
 
 
 ### 스케줄러 작동 방식
+>[GMP Model](golang.md#GMP%20Model)
 
 ![](../05_attachments/Pasted%20image%2020260709035249.png)
 > Go Scheduler
