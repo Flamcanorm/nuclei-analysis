@@ -1,5 +1,4 @@
 >[golang 공식 페이지](https://go.dev/doc/tutorial/getting-started)
-
 >Go programmers writing data-race-free programs can rely on sequentially consistent execution of those programs, just as in essentially all other modern programming languages.  
   When it comes to programs with races, both programmers and compilers should remember the advice: "don't be clever."
 
@@ -16,8 +15,28 @@
 ## Goroutine 을 통한 매우 가벼운 비동기 Concurrent 처리 구현 
 >[goroutine](golang.md#goroutine)
 
+- 사용자 공간 기반의 경량 스케줄링
+	- [Go 런타임](golang.md#Go%20런타임) 은 커널 영역이 아닌 사용자 공간에 존재하며, 하나의 실행 파일에 빌드되어 포함된다.
+	- 이로 인해 goroutine 간의 Context Switching이나 채널을 통한 메세지 전달 시, 모드 전환의 오버헤드가 발생하지 않아 goroutine이 매우 많아도 빠르게 실행될 수 있다.
 
 
+## 동적 스택 확장 (Dynamic Stack Growth)
+
+- [goroutine](golang.md#goroutine)이 생성될 때 2KB 크기의 아주 작은 스택을 가짐
+- 실행 중 스택 메모리가 더 필요해지면 Go 런타임에서 이를 감지하여 기존 스택의 크기를 2배 늘려 새로운 메모리 공간을 유저 영역에 할당하고 기존 데이터를 모두 복사하고 포인털르 이동시킴
+- 스택오버플로우 방지
+
+## 네트워크 폴러 (Netpoller)를 통한 I/O 비동기 최적화
+
+- goroutine이 네트워크 리소스를 기다려야 하는 상황 (Socket Read/Write)이면, 원래는 OS 스레드가 block 됨
+- Go 런타임은 내부에 OS별 비동기 I/O 시스템(Linux `epoll`, macOS `kqueue`, Windows `IOCP`)을 추상화한 [netpoller](golang.md#netpoller)를 둠
+- goroutine이 네트워크 대기가 발생한다면 해당 goroutine을 netpoller에게 전달하고 스레드는 다른 goroutine을 실행함
+- 개발자는 동기식으로 코드를 짜지만 내부적으로는 비동기 I/O가 작동하여 효율을 높임
+
+## 동시 가비지 컬렉터 (Concurrent GC)
+
+- 가비지 컬렉터에 의해 모든 스레드가 멈추는 STW 현상을 막아줌 (아주 짧아짐)
+- 백그라운드에서 가비지 컬렉터를 실행하여 스레드가 멈추지 않고 계속 실행됨
 
 
 # goroutine
@@ -36,9 +55,9 @@ go say() // goroutine 키워드 go 를 사용해 say() 함수 실행
 	- 기존 스레드보다 많은 양의 스레드를 생성할 수 있어서 효율적임.
 - 기본적으로 1개의 CPU에서 처리하기 떄문에 동시성 (Concurrency) 임.
 	-  만약 여러 개의 CPU를 사용하려면 (Parallel), `runtime.GOMAXPROCS(cpu개수)` 함수를 호출하여야한다. (`cpu개수`는 Logical CPU 수를 의미)
-	- 
 
-## gochannel
+
+# gochannel
 ```go
 package main
  
@@ -146,7 +165,7 @@ Go 런타임에 존재하는 Daemon thread로 `P`없이 `G`를 실행하며, gor
 #### Time slice inheritance
 
 ![](../05_attachments/Pasted%20image%2020260709044240.png)
-locality 문제를 해결하가 위해 Go 스케줄러는 `G`가 만들어지면, [Local Run Queue](golang.md#Local%20Run%20Queue)의 tail 대신에 head에 넣는다.
+locality 문제를 해결하가 위해 Go 스케줄러는 `G`가 만들어지면, [Local Run Queue](golang.md#Local%20Run%20Queue)의 tail 대신에 head에 넣는다. (`runnext` 라는 별도의 독립된 포인터에 들어간다. `M`이 `G`를 꺼낼 때 `runnext` -> `local queue` 순서로 가져감)
 
 이렇게 하면 locality를 해결할 수 있다. 하지만 **만약 `G`가 끊임없이 생성되는 경우, local runqueue의 나머지 `G`들은 기아 상태에 빠지게 된다. 게다가 local runqueue가 비질 않으니 global runqueue의 `G`들 또한 기아 상태에 빠지게 된다.**
 
