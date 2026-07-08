@@ -4,5 +4,6 @@
   "readableLineLength": false,
   "useMarkdownLinks": true,
   "newLinkFormat": "relative",
-  "alwaysUpdateLinks": true
+  "alwaysUpdateLinks": true,
+  "attachmentFolderPath": "05_attachments"
 }
