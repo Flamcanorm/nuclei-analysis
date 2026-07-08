@@ -60,10 +60,10 @@ go say() // goroutine 키워드 go 를 사용해 say() 함수 실행
 
 - Go 런타임에서 관리하는 Lightweight 논리적 스레드 (사용자 영역)
 - 기존의 스레드보다 훨씬 적은 메모리 크기로 동작. (kb)
-- 하나의 스레드 내부에서 Multiplexing 기술을 사용하여 여러 가상 스레드를 처리
+- 하나의 스레드 내부에서 [Multiplexing 구조](golang.md#Multiplexing%20구조)을 사용하여 여러 가상 스레드를 처리
 	- 기존 스레드보다 많은 양의 스레드를 생성할 수 있어서 효율적임.
 - 기본적으로 1개의 CPU에서 처리하기 떄문에 동시성 (Concurrency) 임.
-	-  만약 여러 개의 CPU를 사용하려면 (Parallel), `runtime.GOMAXPROCS(cpu개수)` 함수를 호출하여야한다. (`cpu개수`는 Logical CPU 수를 의미)
+	-  만약 여러 개의 CPU를 사용하려면 (Parallel), `runtime.GOMAXPROCS(cpu개수)`([GOMAXPROCS](golang.md#GOMAXPROCS))함수를 호출하여야한다. (`cpu개수`는 Logical CPU 수를 의미)
 
 
 
