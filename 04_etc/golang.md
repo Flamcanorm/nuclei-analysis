@@ -1,4 +1,5 @@
 >[golang 공식 페이지](https://go.dev/doc/tutorial/getting-started)
+>
 >Go programmers writing data-race-free programs can rely on sequentially consistent execution of those programs, just as in essentially all other modern programming languages.  
   When it comes to programs with races, both programmers and compilers should remember the advice: "don't be clever."
 
