@@ -19,6 +19,7 @@ Nuclei 흐름 요약
 - `nuclei -h` : `-h` 플래그를 감지하면 `goflags` 라이브러리의 `Usage()`와 `CommandLineHelp` 메서드를 호출하여 도움말 출력
 
 
+![](../05_attachments/result.txt)
 - `nuclei -u https://example.com` : 
 	- `goflags`의 파싱 과정에서 `-u`를 인식하고 `&options.Targets` 주소에 `[]string{"https://example.com"}` 형태로 저장
 	- 템플릿 로드 및 필터링 이후 `pkg/input`, `pkg/protocols` 에서 타겟 URL 을 파싱하여 스키마(`https`), 호스트(`example.com`), 포트(`443`)을 분리하여 저장. 
@@ -26,14 +27,21 @@ Nuclei 흐름 요약
 	- 대기 큐에서 타겟을 꺼내 프로토콜 검사를 위해 비동기 스캔 프로세스 실행.
 	- 검사 결과(`ResultEvent`)를 채널에 넣고 `pkg/runner`의 채널 수신 루프에서 이벤트를 꺼내어 `pkg/output/standard_writer.go` 파일의 `Wirte()`함수로 출력
 
+
+![](../05_attachments/result1%201.txt)
 - `nuclei -u https://example.com -v` : 
 	- `nuclei -u https://example.com`의 명령어와 동일 과정을 거쳐 `-v` 를 파싱하고 `options.Verbose` 변수에 `true` 저장
 	- `pkg/protocols`내부에서 YAML 템플릿을 하나 실행하며 엔진 내부 코드에서 `options.Verbose` 값을 확인하고 `true`인 경우 `gologger` 외부 로깅 라이브러리를 사용하여 (`LevelVerbose`)즉시 출력
 
+
+
+![](../05_attachments/result2%201.txt)
 - `nuclei -u https://example.com -silent` :
 	- `-silent` 플래그가 파싱되어 `options.Silent` 변수에 `true` 저장, `options` 객체 `runner`에 전달
 	- `gologger` 외부 라이브러리에서 모든 출력 차단 (`LevelSilent`)
 	- `ResultEvent`를 `StandardWriter` 가 출력할 때 `options.Silent`를 확인하여 `true`인 경우 핵심 결과만 출력
+
+
 
 - `nuclei -u https://example.com -s low,medium,high,critical` :
 	- `goflags`에서 `-s` 옵션을 읽고 `low,medium,high,critical` 문자열을 파싱하여 `options.Severity` 슬라이스에 저장
