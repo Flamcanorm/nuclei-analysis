@@ -42,13 +42,15 @@ Nuclei 흐름 요약
 	- `ResultEvent`를 `StandardWriter` 가 출력할 때 `options.Silent`를 확인하여 `true`인 경우 핵심 결과만 출력
 
 
-
+![](../05_attachments/Pasted%20image%2020260715194831.png)
 - `nuclei -u https://example.com -s low,medium,high,critical` :
 	- `goflags`에서 `-s` 옵션을 읽고 `low,medium,high,critical` 문자열을 파싱하여 `options.Severity` 슬라이스에 저장
 	- 템플릿 로드 과정에서 Severity 필터를 적용하여 각 템플릿의 YAML 헤더의 `severity` 값을 확인하고 슬라이스에 저장된 심각도와 비교하여 일치하는 경우만 스캔 큐에 대기
 	- 위 `nuclei -u https://example.com` 명령어와 동일하게 타겟을 지정하고 필터링한 YAML 템플릿으로 `Engine`에서 비동기 스캔 실행
 	- `ResultEvent` 출력
 
+
+![](../05_attachments/Pasted%20image%2020260715195153.png)
 - `nuclei -u https://example.com -tags tech` :
 	- `goflags`가 `-tags tech` 파싱 후 `tech` 단어를 `optinos.Tags` 슬라이스에 저장
 	- `Runner`는 `pkg/catalog/loader`를 통해 템플릿을 불러올 때, 각 템플릿(YAML)의 `info` 섹션에 `tags` 필드 검사
