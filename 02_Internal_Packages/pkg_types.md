@@ -2,7 +2,7 @@
 유형: Internal_Pack
 상태: false
 ---
-# types.go 
+# types.go  
 > [nuclei/pkg/types/types.go](https://github.com/projectdiscovery/nuclei/blob/main/pkg/types/types.go)
 > Nuclei 실행 옵션을 위한 코드
 
