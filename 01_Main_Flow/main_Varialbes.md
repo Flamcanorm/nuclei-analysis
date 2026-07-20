@@ -3,7 +3,9 @@
 유형:
 상세: main.go 변수들
 ---
-# 전역변수 #main/globalVar 
+# 전역변수 #main/globalVar
+
+> `main.go`에 선언되어 프로그램 전체에서 사용하는 변수
 
 ## options #박영현
 ```go

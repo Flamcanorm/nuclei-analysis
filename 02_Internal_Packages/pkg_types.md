@@ -79,3 +79,39 @@ type Options struct {
 - **타입 :** `types.Options` 구조체의 멤버 변수
 - **설명 :** Tags, Templates, Targets, Output, Debug, Timeout 등 Nuclei 실행 설정을 저장
 - **참조 :** [main_Functions](../01_Main_Flow/main_Functions.md), [goflags](../03_External_Packages/goflags.md)
+
+## 실행 구조도에서 사용하는 Options 필드
+
+사진의 Options 상자는 Nuclei의 수많은 설정 중 `Tags`, `Severity`, `OutputFile`만 단순화해 표시한 것이다. 실제 필드 이름과 타입은 다음과 같다.
+
+```go
+type Options struct {
+	Tags      goflags.StringSlice
+	Severities severity.Severities
+	Output    string
+}
+```
+
+| 실제 필드 | 연결되는 CLI 옵션 | 저장 내용 |
+|---|---|---|
+| `Tags` | `-tags` | 실행할 템플릿의 태그 목록 |
+| `Severities` | `-severity` | 실행할 템플릿의 심각도 목록 |
+| `Output` | `-output`, `-o` | 탐지 결과를 저장할 파일 경로 |
+
+예를 들어 다음 명령을 입력한다.
+
+```bash
+./nuclei -u https://example.com -tags cve -severity high -o result.txt
+```
+
+파싱이 끝난 뒤 Options에는 다음과 같은 의미의 값이 들어간다.
+
+```text
+options.Tags       = ["cve"]
+options.Severities = ["high"]
+options.Output     = "result.txt"
+```
+
+Options는 값을 보관하는 설정 모음이다. Options 자체가 템플릿을 찾거나 네트워크 요청을 보내지는 않는다. Runner, Loader, Engine이 Options의 값을 읽어 각자의 작업 방식을 결정한다.
+
+**참조 :** [main](../01_Main_Flow/main.md), [runner_runner](runner_runner.md), [catalog_loader](catalog_loader.md), [core_engine](core_engine.md)
