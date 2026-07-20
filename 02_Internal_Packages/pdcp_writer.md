@@ -18,4 +18,3 @@ var TeamIDEnv = env.GetEnvOrDefault("PDCP_TEAM_ID", NoneTeamID)
 - **위치 :** `internal/pdcp/writer.go`
 - **설명 :** `-team-id`, `-tid` 옵션을 환경변수와 연결할 때 사용
 - **참조 :** [main_Functions](../01_Main_Flow/main_Functions.md)
-test
