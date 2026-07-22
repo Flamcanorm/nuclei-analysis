@@ -1,4 +1,4 @@
-﻿---
+---
 상태: false
 유형: Main_Function
 상세: main.go readConfig 함수 개요

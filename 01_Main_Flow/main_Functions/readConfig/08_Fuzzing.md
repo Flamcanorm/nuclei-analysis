@@ -1,4 +1,4 @@
-﻿---
+---
 상태: false
 유형: Main_Function
 상세: Fuzzing 옵션 그룹
