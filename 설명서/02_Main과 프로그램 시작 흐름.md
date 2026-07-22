@@ -6,6 +6,24 @@
 
 # Main과 프로그램 시작 흐름 #전지성
 
+## 앞 문서에서 이어지는 내용
+
+[[01_프로젝트와 폴더 지도]]에서 `01_Main_Flow`가 프로그램 시작 코드를 정리한 폴더라고 설명했다. 이제 그 폴더가 참고하는 실제 원본 파일 `cmd/nuclei/main.go`를 따라간다.
+
+## 이 문서에서 처음 나오는 이름
+
+| 이름 | 선언·위치 | 뜻 |
+|---|---|---|
+| `cmd/nuclei/main.go` | 원본 소스 파일 | CLI 실행 프로그램의 시작 흐름을 모은 파일 |
+| `main()` | `main.go`의 함수 | 운영체제가 Nuclei를 실행할 때 처음 진입하는 함수 |
+| `types.Options` | `pkg/types/types.go`의 구조체 | 이번 실행의 Target, Debug, Tags, Output 같은 설정 모음 |
+| `options` | `main.go`의 전역변수 | 실제 `types.Options` 객체를 가리키며 `readConfig()`가 값을 채움 |
+| `Runner` | `internal/runner/runner.go`의 구조체 | Parser, Catalog, InputProvider, Writer 같은 실행 구성요소 참조를 보관 |
+| `runner.New()` | `internal/runner/runner.go`의 함수 | Options를 받아 준비가 끝난 Runner를 생성 |
+| `RunEnumeration()` | Runner의 메서드 | 템플릿 로딩과 Engine 실행 흐름을 시작 |
+
+여기서 `types`와 `runner`는 파일명이 아니라 가져온 패키지 이름이다. 따라서 `types.Options`는 `types` 패키지 안의 `Options` 타입, `runner.New`는 `runner` 패키지 안의 `New` 함수를 뜻한다.
+
 ## main.go의 역할
 
 `cmd/nuclei/main.go`는 Nuclei CLI 프로그램의 시작점이다. 사용자가 터미널에서 `./nuclei ...`를 실행하면 운영체제가 Nuclei 실행 파일을 시작하고, 프로그램은 `main()`에서 작업을 시작한다.
@@ -196,6 +214,41 @@ RunEnumeration()
 `runner.New(options)`은 단순히 빈 Runner 하나만 만드는 함수가 아니다. Catalog, Parser, InputProvider, Output Writer, Progress, Interactsh, RateLimiter 등 현재 옵션에 필요한 구성요소를 준비한다.
 
 `RunEnumeration()`은 준비된 구성요소를 이용해 템플릿을 선택하고 실제 스캔 흐름을 시작한다.
+
+이 흐름에서 새로 등장한 이름을 풀면 다음과 같다.
+
+| 이름 | 선언 파일 | 이 단계에서 하는 일 | 다음 연결 |
+|---|---|---|---|
+| Catalog | `pkg/catalog/catalog.go` 인터페이스 | 템플릿 경로를 찾고 파일을 열 수 있는 공통 규칙 제공 | Loader와 Parser가 사용 |
+| Parser | `pkg/templates/parser.go`의 구조체 | YAML·JSON 템플릿을 `Template` 객체로 해석 | Loader Store에 Template 전달 |
+| InputProvider | `pkg/input/provider/interface.go` 인터페이스 | `-u`, `-l` 등의 입력을 공통 대상 형태로 제공 | Engine의 대상 반복에 전달 |
+| Output Writer | `pkg/output/output.go`의 `Writer` 인터페이스 | 탐지 결과 `ResultEvent`를 화면·파일 등에 기록 | 프로토콜 실행 결과를 받음 |
+| Progress | 진행률 패키지의 공통 타입 | 대상·요청·매칭 진행 상태 집계 | Logger와 통계 출력에서 사용 |
+| Interactsh | OAST Client | 대상이 외부 서버로 보낸 DNS·HTTP 상호작용 확인 | OAST 템플릿 결과 판정 |
+| RateLimiter | 요청 제한 객체 | 설정 시간 동안 보낼 요청 수 제한 | 프로토콜 요청 직전에 사용 |
+| Engine | `pkg/core/engine.go`의 구조체 | Template 목록과 InputProvider를 실행 순서에 맞게 조합 | ResultEvent를 Writer로 연결 |
+
+따라서 위 흐름을 더 자세히 쓰면 다음과 같다.
+
+```text
+main.go의 options 전역변수
+  ↓ readConfig()가 CLI 값을 채움
+*types.Options
+  ↓ main()이 runner.New(options)에 같은 참조를 전달
+*Runner
+  ├─ New() 안에서 Parser·Catalog·InputProvider·Writer 등을 생성
+  └─ 각 객체를 Runner 구조체 필드에 보관
+  ↓ main()이 nucleiRunner.RunEnumeration() 호출
+ExecutorOptions에 Runner 필드들을 다시 묶음
+  ↓
+Loader가 Template 목록 생성 + InputProvider가 대상 제공
+  ↓
+Engine.ExecuteScanWithOpts()
+  ↓
+프로토콜 실행 → ResultEvent → Writer
+```
+
+이후 [[03_CLI와 readConfig]]에서는 위 흐름의 첫 번째 단계인 “`readConfig()`가 Options에 값을 채운다”를 자세히 다룬다. [[04_내부 패키지]]에서는 Runner 안에 들어간 구성요소를 하나씩 다시 설명한다.
 
 ## 관련 분석 노트
 

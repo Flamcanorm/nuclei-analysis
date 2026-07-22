@@ -6,6 +6,25 @@
 
 # 템플릿과 DSL 설명서 #전지성
 
+## 앞 문서에서 이어지는 내용
+
+[[04_내부 패키지]]에서 Catalog가 파일을 열고 Parser가 YAML·JSON을 `Template` 객체로 바꾼다고 설명했다. [[05_외부 패키지]]에서는 Nuclei 내부 DSL 연결 계층이 외부 `projectdiscovery/dsl` 라이브러리를 사용한다고 설명했다. 이 문서는 두 흐름이 실제 검사 규칙에서 만나는 지점이다.
+
+## 이 문서에서 처음 나오는 이름
+
+| 이름 | 선언·위치 | 뜻과 연결 |
+|---|---|---|
+| `Template` | `pkg/templates/templates.go`의 구조체 | YAML·JSON의 ID, Info, 요청, 실행 제어를 필드로 보관 |
+| `model.Info` | Template의 `Info` 필드 타입 | 이름, 작성자, 심각도, 태그 같은 설명 정보 |
+| Request | 각 프로토콜 패키지의 요청 구조체 | HTTP·DNS·SSL 등 무엇을 실행할지 정의 |
+| Matcher | 연산자 관련 구조체 | 응답이 탐지 조건과 일치하는지 판단 |
+| Extractor | 연산자 관련 구조체 | 응답에서 필요한 값을 추출 |
+| DSL | 조건과 변환을 적는 전용 표현 언어 | Matcher·Extractor의 복잡한 표현식에서 사용 |
+| Compile | 파싱한 Template을 실제 실행 가능한 요청기로 준비 | Parser의 Parse보다 뒤 단계 |
+| Registry | 함수 이름과 실행 함수·서명을 모아 둔 등록 목록 | DSL 실행과 `-ldf` 출력이 함께 사용 |
+
+`Template`은 템플릿 파일 자체와 구분해야 한다. 파일은 디스크의 YAML·JSON 원문이고, `Template`은 Parser가 그 원문을 읽어 메모리에 만든 구조체 객체다.
+
 ## 템플릿이란?
 
 Nuclei 템플릿은 “어떤 요청을 보내고 어떤 응답이면 탐지로 볼 것인지”를 YAML 또는 JSON으로 정의한 검사 규칙이다.
@@ -19,6 +38,25 @@ Nuclei 템플릿
 ```
 
 실행 파일만으로는 어떤 취약점을 검사할지 알 수 없다. 템플릿이 구체적인 검사 방법을 제공한다.
+
+앞 문서의 구성요소와 연결하면 다음과 같다.
+
+```text
+사용자가 -t 또는 기본 템플릿 위치 선택
+  ↓ Options.Templates
+Catalog가 파일 경로 해결
+  ↓
+Parser.ParseTemplate()
+YAML·JSON 원문 → *Template
+  ↓
+Loader가 tags·severity 등 필터 적용
+  ↓
+Engine이 Template의 프로토콜 Request 실행
+  ↓
+Matcher·Extractor 처리
+  ↓
+ResultEvent → Writer
+```
 
 ## 템플릿의 주요 구성
 
@@ -58,6 +96,8 @@ info:
 - `headless`: 브라우저 동작
 - 그 외 file, code, javascript, websocket, whois 등
 
+이 요청 정의는 Engine 자체의 필드가 아니다. `Template` 구조체의 `RequestsHTTP`, `RequestsDNS`, `RequestsSSL` 같은 필드에 저장되고, Compile 단계가 해당 프로토콜 실행기를 준비한다.
+
 ### Matchers
 
 응답이 탐지 조건과 일치하는지 판단한다.
@@ -69,9 +109,13 @@ info:
 - 응답 헤더가 특정 정규식과 일치하는가?
 - 여러 조건이 모두 참인가?
 
+Matcher는 “요청을 보내는 구성요소”가 아니라 응답이 돌아온 뒤 결과를 판정하는 규칙이다. 따라서 흐름상 Request 실행 다음, ResultEvent 생성 전에 위치한다.
+
 ### Extractors
 
 응답에서 필요한 값을 뽑아낸다. 취약 여부 자체를 판단하는 Matcher와 달리, Extractor는 버전, 토큰, 이메일, Tenant ID 같은 값을 결과에 붙이는 데 사용한다.
+
+앞 문서의 Writer는 Extractor를 직접 실행하지 않는다. 프로토콜 실행기와 연산자 계층이 추출을 끝낸 뒤 만들어진 ResultEvent를 Writer가 받는다.
 
 ## YAML과 JSON을 모두 지원하는 이유
 
@@ -253,6 +297,8 @@ Nuclei 내부 계층은 외부 라이브러리 함수뿐 아니라 `resolve`, `g
 ```
 
 파일로 저장하거나 색상을 지원하지 않는 터미널에서 볼 때 유용하다.
+
+다음 [[07_전체 스캔 실행 흐름]]에서는 이 문서에서 설명한 Template 객체가 InputProvider의 대상과 결합되어 ResultEvent가 되기까지를 한 흐름으로 합친다.
 
 ## 실제로 어떤 함수가 있는가?
 

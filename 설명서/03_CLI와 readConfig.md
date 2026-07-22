@@ -6,6 +6,25 @@
 
 # CLI와 readConfig 설명서 #전지성
 
+## 앞 문서에서 이어지는 내용
+
+[[02_Main과 프로그램 시작 흐름]]에서 `main()`이 `readConfig()`를 호출한 뒤 완성된 `options`를 `runner.New(options)`에 전달한다고 설명했다. 이 문서는 그중 **사용자의 터미널 문자열이 Options 필드로 바뀌는 구간**만 확대해서 본다.
+
+## 이 문서에서 처음 나오는 이름
+
+| 이름 | 선언·출처 | 뜻과 연결 |
+|---|---|---|
+| `readConfig()` | `cmd/nuclei/main.go` | CLI 옵션을 등록하고 Parse한 뒤 Config·Profile을 병합하는 함수 |
+| `goflags` | 외부 패키지 | 옵션 등록, 도움말 그룹, 명령줄 파싱 기능 제공 |
+| `FlagSet` | goflags의 타입 | 이번 프로그램에 등록된 모든 옵션 정보 보관 |
+| `CreateGroup()` | FlagSet의 메서드 | Target, Output, Debug처럼 도움말과 옵션을 분류 |
+| `BoolVarP()` | FlagSet의 메서드 | Bool 필드에 긴 옵션과 짧은 별칭을 연결 |
+| `flagSet.Parse()` | FlagSet의 메서드 | 실제 명령줄을 읽어 연결된 Options 필드를 변경 |
+| Config | 설정 파일 | 자주 쓰는 옵션을 파일로 보관해 CLI 값과 병합 |
+| Template Profile | Nuclei 프로필 파일 | 템플릿 선택·필터·인증 등 여러 설정을 한 묶음으로 재사용 |
+
+`FlagSet`은 스캔 엔진이 아니다. 입력 가능한 옵션의 이름·타입·저장 위치를 기억하다가 `Parse()`에서 값을 채우는 **CLI 전용 관리자**다.
+
 ## CLI란 무엇인가?
 
 CLI는 Command Line Interface의 약자다. 사용자가 화면의 버튼을 누르는 대신 터미널에 명령과 옵션을 입력해 프로그램을 조작하는 방식이다.
@@ -30,6 +49,27 @@ CLI는 Command Line Interface의 약자다. 사용자가 화면의 버튼을 누
 4. `flagSet.Parse()`로 실제 터미널 입력을 해석한다.
 5. Config 파일과 Template Profile을 병합한다.
 6. 서로 충돌하거나 잘못된 옵션을 검사하고 값을 보정한다.
+
+앞 문서의 흐름과 합치면 다음 위치다.
+
+```text
+main() 시작
+  ↓
+runner.ConfigureOptions()
+goflags의 파일 판별 규칙 준비
+  ↓
+readConfig()
+FlagSet 생성 → 옵션 그룹 등록 → Parse → Config/Profile 병합
+  ↓
+options 전역변수의 필드가 완성됨
+  ↓
+runner.ParseOptions(options)
+실행 전 최종 검사·보정
+  ↓
+runner.New(options)
+```
+
+`ConfigureOptions()`와 `readConfig()`는 이름이 비슷해도 역할이 다르다. 앞 함수는 goflags의 공통 파일 판별 방식을 먼저 설정하고, 뒤 함수는 실제 Nuclei CLI 옵션을 등록하고 읽는다.
 
 ## 옵션 등록과 파싱의 차이
 
@@ -269,3 +309,5 @@ Config/Profile 병합
   ↓
 Runner에 최종 Options 전달
 ```
+
+다음 [[04_내부 패키지]]에서는 이렇게 완성된 `*types.Options`가 Runner 구조체의 `options` 필드에 저장되고, 다시 Loader용 `loader.Config`와 프로토콜용 `ExecutorOptions`로 나뉘어 전달되는 과정을 설명한다.
