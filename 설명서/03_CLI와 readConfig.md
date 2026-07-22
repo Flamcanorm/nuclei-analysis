@@ -6,8 +6,6 @@
 
 # CLI와 readConfig 설명서 #전지성
 
-## 앞 문서에서 이어지는 내용
-
 [[02_Main과 프로그램 시작 흐름]]에서 `main()`이 `readConfig()`를 호출한 뒤 완성된 `options`를 `runner.New(options)`에 전달한다고 설명했다. 이 문서는 그중 **사용자의 터미널 문자열이 Options 필드로 바뀌는 구간**만 확대해서 본다.
 
 ## 이 문서에서 처음 나오는 이름
@@ -40,6 +38,8 @@ CLI는 Command Line Interface의 약자다. 사용자가 화면의 버튼을 누
 - `-o result.txt`: 탐지 결과를 파일에 저장
 
 ## readConfig가 하는 일
+<!-- main-line-section-tags: #L69 #L168 -->
+#L69 #L168
 
 `readConfig()`는 이름만 보면 설정 파일 하나를 읽는 함수처럼 보이지만 실제 역할은 더 크다.
 
@@ -72,6 +72,8 @@ runner.New(options)
 `ConfigureOptions()`와 `readConfig()`는 이름이 비슷해도 역할이 다르다. 앞 함수는 goflags의 공통 파일 판별 방식을 먼저 설정하고, 뒤 함수는 실제 Nuclei CLI 옵션을 등록하고 읽는다.
 
 ## 옵션 등록과 파싱의 차이
+<!-- main-line-section-tags: #L69 #L74 -->
+#L69 #L74
 
 옵션 등록은 “이 프로그램이 어떤 옵션을 받을 수 있는지” 정의하는 단계다.
 
@@ -111,6 +113,8 @@ ListDslSignatures = true
 ```
 
 ## 옵션 하나가 실제 필드와 연결되는 과정
+<!-- main-line-section-tags: #L69 #L74 -->
+#L69 #L74
 
 `-ldf`를 예로 들면 선언은 두 파일에 나뉜다.
 
@@ -181,6 +185,8 @@ main 또는 Runner가 필드를 읽어 동작 선택
 반대로 단점도 있다. 필드 선언과 옵션 등록이 다른 파일에 있으므로 초보자는 두 곳을 함께 찾아야 전체 의미를 알 수 있다. 그래서 분석할 때는 항상 `필드 선언 → 등록 → Parse → 사용처` 순서로 검색해야 한다.
 
 ## flagSet.Parse가 하는 일
+<!-- main-line-section-tags: #L69 -->
+#L69
 
 `flagSet.Parse()`는 명령줄 문자열을 왼쪽부터 읽으면서 다음 작업을 수행한다.
 
@@ -282,6 +288,8 @@ Nuclei 실행 파일과 nuclei-templates 업데이트를 관리한다.
 인증 정보와 비밀값 파일을 읽고 템플릿 요청에 적용한다.
 
 ## PostProcessing이 필요한 이유
+<!-- main-line-section-tags: #L69 #L168 -->
+#L69 #L168
 
 CLI를 문법적으로 파싱했다고 해서 바로 안전하게 실행할 수 있는 것은 아니다.
 
@@ -311,3 +319,4 @@ Runner에 최종 Options 전달
 ```
 
 다음 [[04_내부 패키지]]에서는 이렇게 완성된 `*types.Options`가 Runner 구조체의 `options` 필드에 저장되고, 다시 Loader용 `loader.Config`와 프로토콜용 `ExecutorOptions`로 나뉘어 전달되는 과정을 설명한다.
+

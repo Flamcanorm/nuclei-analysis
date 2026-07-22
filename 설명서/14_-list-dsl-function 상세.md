@@ -3,13 +3,28 @@
 상태: false
 상세: DSL을 처음 접하는 사람을 위한 -list-dsl-function 전체 코드 흐름
 ---
----
-유형: 설명서
-상태: false
-상세: DSL을 처음 접하는 사람을 위한 -list-dsl-function 전체 코드 흐름
----
 
 # `-list-dsl-function` 처음부터 이해하기 #전지성
+
+<!-- main-line-tags:start -->
+> [!info]- 관련 main.go 줄 태그
+> 이 문서가 직접 설명하거나 다음 단계로 연결하는 main.go 줄이다. 태그를 누르면 같은 줄을 다루는 다른 설명서도 함께 찾을 수 있다.
+>
+> #L74
+<!-- main-line-tags:end -->
+
+<!-- glossary-links:start -->
+> [!info]- 명칭 참조
+> 이 문서에서 사용하는 공통 명칭은 아래 링크를 눌러 명칭 사전에서 확인할 수 있다.
+>
+> [패키지](<../03_External_Packages/04_etc/sample.md#패키지>) · [실행 파일](<../03_External_Packages/04_etc/sample.md#실행 파일>) · [선언](<../03_External_Packages/04_etc/sample.md#선언>) · [구조체](<../03_External_Packages/04_etc/sample.md#구조체>) · [변수](<../03_External_Packages/04_etc/sample.md#변수>) · [필드](<../03_External_Packages/04_etc/sample.md#필드>) · [함수](<../03_External_Packages/04_etc/sample.md#함수>) · [인자](<../03_External_Packages/04_etc/sample.md#인자>)
+> [반환값](<../03_External_Packages/04_etc/sample.md#반환값>) · [Callback](<../03_External_Packages/04_etc/sample.md#Callback>) · [Wrapper](<../03_External_Packages/04_etc/sample.md#Wrapper>) · [Registry](<../03_External_Packages/04_etc/sample.md#Registry>) · [Map](<../03_External_Packages/04_etc/sample.md#Map>) · [CLI](<../03_External_Packages/04_etc/sample.md#CLI>) · [짧은 별칭](<../03_External_Packages/04_etc/sample.md#짧은 별칭>) · [Bool 옵션](<../03_External_Packages/04_etc/sample.md#Bool 옵션>)
+> [기본값](<../03_External_Packages/04_etc/sample.md#기본값>) · [FlagSet](<../03_External_Packages/04_etc/sample.md#FlagSet>) · [flagSet.Parse()](<../03_External_Packages/04_etc/sample.md#flagSet.Parse()>) · [Runner](<../03_External_Packages/04_etc/sample.md#Runner>) · [Loader](<../03_External_Packages/04_etc/sample.md#Loader>) · [Store](<../03_External_Packages/04_etc/sample.md#Store>) · [Cache](<../03_External_Packages/04_etc/sample.md#Cache>) · [Engine](<../03_External_Packages/04_etc/sample.md#Engine>)
+> [Logger](<../03_External_Packages/04_etc/sample.md#Logger>) · [ID](<../03_External_Packages/04_etc/sample.md#ID>) · [Info](<../03_External_Packages/04_etc/sample.md#Info>) · [Matcher](<../03_External_Packages/04_etc/sample.md#Matcher>) · [Tag](<../03_External_Packages/04_etc/sample.md#Tag>) · [Severity](<../03_External_Packages/04_etc/sample.md#Severity>) · [Parse](<../03_External_Packages/04_etc/sample.md#Parse>) · [Compile](<../03_External_Packages/04_etc/sample.md#Compile>)
+> [DSL](<../03_External_Packages/04_etc/sample.md#DSL>) · [DSL 표현식](<../03_External_Packages/04_etc/sample.md#DSL 표현식>) · [연산자](<../03_External_Packages/04_etc/sample.md#연산자>) · [DSL 함수](<../03_External_Packages/04_etc/sample.md#DSL 함수>) · [함수 서명](<../03_External_Packages/04_etc/sample.md#함수 서명>) · [-list-dsl-function](<../03_External_Packages/04_etc/sample.md#-list-dsl-function>) · [-ldf](<../03_External_Packages/04_etc/sample.md#-ldf>) · [ListDslSignatures](<../03_External_Packages/04_etc/sample.md#ListDslSignatures>)
+> [NoColor](<../03_External_Packages/04_etc/sample.md#NoColor>) · [HelperFunctions](<../03_External_Packages/04_etc/sample.md#HelperFunctions>) · [FunctionNames](<../03_External_Packages/04_etc/sample.md#FunctionNames>) · [DSL Registry](<../03_External_Packages/04_etc/sample.md#DSL Registry>) · [INF](<../03_External_Packages/04_etc/sample.md#INF>) · [Debug](<../03_External_Packages/04_etc/sample.md#Debug>) · [Verbose](<../03_External_Packages/04_etc/sample.md#Verbose>) · [JSON](<../03_External_Packages/04_etc/sample.md#JSON>)
+> [전자서명](<../03_External_Packages/04_etc/sample.md#전자서명>)
+<!-- glossary-links:end -->
 
 > DSL, 함수, 함수 서명, Bool 옵션, Registry, Wrapper 등 이 문서에 나오는 공통 명칭은 [Nuclei 분석 명칭 사전](../03_External_Packages/04_etc/sample.md)에 모아 정리되어 있다. 아래 내용은 각 명칭이 L74 코드에서 어떻게 연결되는지 설명한다.
 
@@ -29,7 +44,7 @@
 
 두 명령은 같은 `Options.ListDslSignatures` 필드를 true로 만든다.
 
-> **실제 출력 확인:** [-list-dsl-function 실행 결과](<../결과/-list-dsl-function 출력.md>)
+> **실제 출력 확인:** [-list-dsl-function 실행 결과](<../출력결과/-list-dsl-function.md>)
 
 설명서는 명령이 어떤 코드로 동작하는지를 다루고, 전체 함수 목록 원문은 결과 문서에 분리해 보관한다.
 
@@ -204,6 +219,7 @@ Options.ListDslSignatures = true
 `flagSet.Parse()`는 DSL 목록을 직접 만들지 않는다. 나중 코드가 어떤 실행 경로를 선택할 수 있도록 설정값만 바꾼다.
 
 ## 9. L74 조건문은 무엇을 하는가?
+#전지성 #L74 #main/L74/dsl
 
 ```go
 if options.ListDslSignatures {
@@ -411,4 +427,5 @@ L74의 return
 
 따라서 이 코드는 “DSL 함수로 대상을 검사하는 코드”가 아니라, **템플릿 작성자가 어떤 DSL 함수를 쓸 수 있는지 알려주는 자체 설명 기능**이다.
 
-다음에는 [-list-dsl-function 실행 결과](<../결과/-list-dsl-function 출력.md>)로 이동해 실제 함수 이름과 서명 형식을 확인할 수 있다.
+다음에는 [-list-dsl-function 실행 결과](<../출력결과/-list-dsl-function.md>)로 이동해 실제 함수 이름과 서명 형식을 확인할 수 있다.
+

@@ -6,6 +6,9 @@
 
 # main.go 분기별 상세 설명 #전지성
 
+
+> 이 문서에 등장하는 구조체, 객체, 필드, 분기, Profiling, Hang, Resume 등의 공통 뜻은 [Nuclei 분석 명칭 사전](../03_External_Packages/04_etc/sample.md)에 정리되어 있다. 이 문서에서는 그 명칭이 `main.go`에서 실제로 어떻게 연결되는지를 설명한다.
+
 ## 이 문서의 역할
 
 `01_Main_Flow/main.md`는 줄 번호별 핵심 흐름을 빠르게 보는 문서다. 이 문서는 그 요약에서 새로 등장하는 옵션, 함수, 구조체와 다음 연결을 자세히 설명한다.
@@ -55,9 +58,8 @@ return
 
 따라서 `-sign`, `-ldf`, 기존 결과 업로드는 일반 스캔과 동시에 실행하는 부가 기능이 아니라 **별도의 실행 모드**다.
 
-<a id="l80-template-sign"></a>
-
-## L80 — `-sign` 템플릿 서명 #전지성
+## L80 — `-sign` 템플릿 서명
+#전지성 #L80 #main/L80/template-sign
 
 ### 새로 등장하는 이름
 
@@ -115,9 +117,8 @@ return으로 일반 스캔 없이 종료
 
 서명은 “이 템플릿이 안전하다”를 자동 보장하는 기능이 아니다. 서명 이후 내용이 바뀌지 않았고 신뢰하는 키로 서명되었는지 확인할 근거를 제공한다. 악의적인 내용을 신뢰하지 않는 키로 서명할 수도 있으므로 서명자 신뢰와 템플릿 내용 검토가 모두 필요하다.
 
-<a id="l118-profiling"></a>
-
-## L118 — Memory·CPU·Trace Profiling #전지성
+## L118 — Memory·CPU·Trace Profiling
+#전지성 #L118 #main/L118/profiling
 
 ### 새로 등장하는 이름
 
@@ -154,9 +155,8 @@ Profiling을 시작한 뒤 아래 일반 실행 흐름이 계속된다. 프로�
 
 앞의 Parser 설명에서 Template 객체와 Cache가 메모리를 사용한다고 설명했다. Memory Profile은 “Cache가 메모리를 쓸 것 같다”는 추측에서 끝내지 않고, 실제 실행 중 어떤 타입이 Heap을 차지하는지 측정할 때 사용할 수 있다.
 
-<a id="l166-execution-id"></a>
-
-## L166 — Execution ID 생성 #전지성
+## L166 — Execution ID 생성
+#전지성 #L166 #main/L166/execution-id
 
 ### 새로 등장하는 이름
 
@@ -183,9 +183,8 @@ protocolinit.Close(r.options.ExecutionId)
 
 CLI를 한 번만 실행할 때는 전역 상태 하나처럼 보여도, SDK나 장기 실행 프로세스에서는 여러 스캔이 같은 프로세스 안에서 실행될 수 있다. Execution ID가 있으면 한 실행의 연결 상태와 다른 실행의 상태가 섞이지 않도록 키로 사용할 수 있다.
 
-<a id="l168-parse-options"></a>
-
-## L168 — `runner.ParseOptions(options)` #전지성
+## L168 — `runner.ParseOptions(options)`
+#전지성 #L168 #main/L168/parse-options
 
 ### readConfig와 무엇이 다른가?
 
@@ -213,9 +212,8 @@ runner.ParseOptions(options)
 
 `readConfig()`는 CLI 입력 형식에 가깝고 `ParseOptions()`는 실행 환경 준비에 가깝다. 이 구분 덕분에 다른 진입점에서 이미 만들어진 Options를 사용할 때도 Runner 쪽의 검사·초기화를 재사용할 수 있다.
 
-<a id="l170-cloud-upload"></a>
-
-## L170 — 기존 결과 파일 Cloud 업로드 #전지성
+## L170 — 기존 결과 파일 Cloud 업로드
+#전지성 #L170 #main/L170/cloud-upload
 
 ### 새로 등장하는 이름
 
@@ -251,9 +249,8 @@ Writer 종료 후 main() return
 
 이 모드는 과거에 만들어 둔 결과를 다시 업로드하는 기능이다. 새로운 Target과 Template을 실행할 필요가 없으므로 업로드가 끝나면 `return`한다.
 
-<a id="l177-runner-new"></a>
-
-## L177 — `runner.New(options)` #전지성
+## L177 — `runner.New(options)`
+#전지성 #L177 #main/L177/runner-new
 
 ### Runner 파일과 구조체
 
@@ -307,9 +304,8 @@ Interactsh Client·RateLimiter 생성
 
 `New()`은 사용할 자원을 준비하고, `RunEnumeration()`은 준비된 자원으로 실제 작업을 한다. 생성 중 오류와 실행 중 오류를 구분하고, 실행 전 중단 감시를 붙이거나 SDK에서 Runner를 구성한 뒤 원하는 시점에 시작하기 쉬워진다.
 
-<a id="l185-hang-monitor"></a>
-
-## L185 — Hang Monitor #전지성
+## L185 — Hang Monitor
+#전지성 #L185 #main/L185/hang-monitor
 
 ### Hang은 무엇인가?
 
@@ -350,9 +346,8 @@ crash-resume-file-<dumpID>.dump 저장
 
 같은 상태가 반복된다고 항상 실제 Hang인 것은 아니므로 탐지 로직은 여러 차례 상태를 비교한다. 이 기능은 일반적인 취약점 탐지 기능이 아니라 Nuclei 자체 실행 문제를 조사하는 Debug 기능이다.
 
-<a id="l204-graceful-shutdown"></a>
-
-## L204 — Ctrl+C와 Graceful Shutdown #전지성
+## L204 — Ctrl+C와 Graceful Shutdown
+#전지성 #L204 #main/L204/graceful-shutdown
 
 ### Graceful Shutdown이란?
 
@@ -390,9 +385,8 @@ os.Exit(1)
 
 main Goroutine은 `RunEnumeration()`에서 스캔을 수행하고 있다. 별도 Goroutine이 신호를 기다리면 스캔 중에도 Ctrl+C를 받아 정리 작업을 시작할 수 있다.
 
-<a id="l237-run-enumeration"></a>
-
-## L237 — `RunEnumeration()`과 `Close()` #전지성
+## L237 — `RunEnumeration()`과 `Close()`
+#전지성 #L237 #main/L237/run-enumeration
 
 ### RunEnumeration의 역할
 
@@ -439,9 +433,8 @@ ResultEvent → Writer
 
 Close는 단순히 메모리를 “삭제”하는 함수가 아니다. 파일 Flush, 네트워크 종료, Goroutine 정지, 임시 파일 삭제처럼 객체별 종료 절차를 수행한다.
 
-<a id="l245-resume-cleanup"></a>
-
-## L245 — 정상 완료 후 Resume 파일 삭제 #전지성
+## L245 — 정상 완료 후 Resume 파일 삭제
+#전지성 #L245 #main/L245/resume-cleanup
 
 ### 앞의 Graceful Shutdown과 연결
 

@@ -166,6 +166,8 @@ substr(str string, start int, optionalEnd int)
 반환 형식이 표시된 서명은 함수 실행 결과가 문자열인지 숫자인지도 알려준다.
 
 ## -list-dsl-function이란?
+<!-- main-line-section-tags: #L74 #main/L74/dsl -->
+#L74 #main/L74/dsl
 
 정식 긴 옵션은 `-list-dsl-function`, 짧은 별칭은 `-ldf`다.
 
@@ -210,8 +212,12 @@ Nuclei의 `pkg/operators/common/dsl/dsl.go`는 초기화 시 다음 작업을 �
 > **설계 해석:** 목록을 수동 문자열로 따로 관리했다면 실제 실행 가능한 함수와 도움말 목록이 어긋날 위험이 있다. 동일한 함수 Registry에서 실행 맵과 출력 서명을 만들기 때문에 그 불일치 가능성을 줄인다.
 
 ## 코드에서의 전체 이동 경로
+<!-- main-line-section-tags: #L74 -->
+#L74
 
 ### 1. 옵션 등록
+<!-- main-line-section-tags: #L74 -->
+#L74
 
 `cmd/nuclei/main.go`의 Debug 그룹에서 등록된다.
 
@@ -228,6 +234,8 @@ flagSet.BoolVarP(
 Debug 그룹에 보인다는 것은 도움말에서 Debug 영역에 묶인다는 뜻이다. `-debug`를 함께 켜야 작동한다는 뜻은 아니다.
 
 ### 2. 사용자 입력 파싱
+<!-- main-line-section-tags: #L74 -->
+#L74
 
 `flagSet.Parse()`가 `-ldf` 또는 `-list-dsl-function`을 발견하면 다음 값을 바꾼다.
 
@@ -239,6 +247,8 @@ false → true
 이 필드는 `pkg/types/types.go`의 `Options`에 선언되어 있다.
 
 ### 3. main에서 확인
+<!-- main-line-section-tags: #L74 #main/L74/dsl -->
+#L74 #main/L74/dsl
 
 `readConfig()`가 끝난 직후 다음 코드가 실행된다.
 
@@ -355,3 +365,4 @@ http:
 3. `to_lower(body)`가 본문을 소문자로 바꾼다.
 4. `contains(...)`가 문자열 포함 여부를 반환한다.
 5. 두 조건이 모두 참이면 Matcher가 매칭으로 판단한다.
+

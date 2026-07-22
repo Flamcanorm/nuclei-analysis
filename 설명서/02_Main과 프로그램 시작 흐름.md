@@ -6,8 +6,6 @@
 
 # Main과 프로그램 시작 흐름 #전지성
 
-## 앞 문서에서 이어지는 내용
-
 [[01_프로젝트와 폴더 지도]]에서 `01_Main_Flow`가 프로그램 시작 코드를 정리한 폴더라고 설명했다. 이제 그 폴더가 참고하는 실제 원본 파일 `cmd/nuclei/main.go`를 따라간다.
 
 ## 이 문서에서 처음 나오는 이름
@@ -87,6 +85,8 @@ var (
 이 값들이 파일 범위에 있는 이유는 `main()`뿐 아니라 같은 파일에 정의된 `readConfig()`, Callback, 프로필 처리 함수들이 함께 접근해야 하기 때문이다. 다만 전역 상태는 어디서 값이 바뀌었는지 추적하기 어려워질 수 있으므로, 핵심 실행 설정은 하나의 `Options` 구조체로 묶어 전달한다.
 
 ### 3. main이 Runner를 만드는 정확한 위치
+<!-- main-line-section-tags: #L177 -->
+#L177
 
 ```go
 nucleiRunner, err := runner.New(options)
@@ -105,6 +105,8 @@ internal/runner의 New 함수
 `nucleiRunner`는 Runner 구조체 전체를 복사해 담는 변수가 아니라, 생성된 Runner를 가리키는 포인터를 받는다. 따라서 이후 `RunEnumeration()`, `Close()`, `SaveResumeConfig()`는 같은 Runner와 그 안의 같은 구성요소를 사용한다.
 
 ### 4. 함수 선언과 실제 연결
+<!-- main-line-section-tags: #L69 #L168 #L177 #L237 -->
+#L69 #L168 #L177 #L237
 
 | 호출 위치 | 호출 함수 | 전달하는 값 | 결과 |
 |---|---|---|---|
@@ -116,6 +118,8 @@ internal/runner의 New 함수
 | `main.go` | `nucleiRunner.Close()` | 없음 | Writer, InputProvider, 임시 자원 정리 |
 
 ### 5. main이 Engine을 직접 만들지 않는 이유
+<!-- main-line-section-tags: #L177 #L237 -->
+#L177 #L237
 
 코드상 Engine은 `RunEnumeration()` 안에서 다음처럼 생성된다.
 
@@ -159,6 +163,8 @@ Options
 이후 Runner와 Writer가 같은 `Options`를 전달받기 때문에 대상, 디버그 여부, 출력 파일을 다시 물어볼 필요가 없다.
 
 ### Logger
+<!-- main-line-section-tags: #L58 #L168 -->
+#L58 #L168
 
 Logger는 프로그램 상태를 사람에게 알리는 출력 담당자다. 스캔 탐지 결과와는 구분된다.
 
@@ -170,10 +176,14 @@ Logger는 프로그램 상태를 사람에게 알리는 출력 담당자다. 스
 ```
 
 ### inlineSecretsTempFiles
+<!-- main-line-section-tags: #L60 -->
+#L60
 
 프로필 안에 직접 적힌 인증 정보를 임시 파일로 바꾸어 사용할 때, 생성된 파일 경로를 기억하는 목록이다. `defer` 정리 코드가 프로그램 종료 시 이 파일들을 삭제한다.
 
 ## ConfigureOptions와 readConfig
+<!-- main-line-section-tags: #L69 -->
+#L69
 
 ```go
 if err := runner.ConfigureOptions(); err != nil {
@@ -188,6 +198,8 @@ _ = readConfig()
 - `readConfig()`: CLI 옵션 그룹을 등록하고 `flagSet.Parse()`로 실제 명령줄을 읽은 뒤 설정을 병합·보정한다.
 
 ## 조기 종료 명령
+<!-- main-line-section-tags: #L74 #L80 #L170 -->
+#L74 #L80 #L170
 
 `main()`에는 전체 스캔을 시작하지 않고 필요한 정보만 출력한 뒤 끝나는 경로가 있다.
 
@@ -200,6 +212,8 @@ _ = readConfig()
 이런 명령은 대상에 요청을 보내는 스캔 명령이 아니다. 필요한 정보를 출력한 뒤 `return`으로 `main()`이 끝난다.
 
 ## Runner 생성과 실행
+<!-- main-line-section-tags: #L177 #L237 #L245 -->
+#L177 #L237 #L245
 
 ```text
 options
@@ -257,3 +271,4 @@ Engine.ExecuteScanWithOpts()
 - `01_Main_Flow/main_Varialbes.md`: 변수와 구조체
 - `01_Main_Flow/main_Functions/`: 함수별 세부 분석
 - `01_Main_Flow/main_Functions/readConfig/`: CLI 그룹별 분석
+
