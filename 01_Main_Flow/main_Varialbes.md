@@ -29,3 +29,16 @@ inlineSecretsTempFiles []string
 # 지역변수 #main/localVar
 
 # 구조체 #main/struct
+
+## profileSecrets #전지성
+```go
+type profileSecrets struct {
+	Secrets interface{} `yaml:"secrets"`
+}
+```
+> Template Profile YAML에서 `secrets` 항목만 꺼내기 위한 보조 구조체
+
+- **사용 위치 :** `processInlineSecretsFromProfile()`
+- **역할 :** Profile 전체를 별도 구조체로 만들지 않고 `secrets` 항목만 임시로 해석
+- **결과 :** `Secrets`가 비어 있지 않으면 별도의 임시 Secret YAML 파일을 만드는 데 사용
+- **참조 :** [processInlineSecretsFromProfile](main_Functions/processInlineSecretsFromProfile.md)

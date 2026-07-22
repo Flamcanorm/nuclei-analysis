@@ -3,7 +3,7 @@
 상태: false
 상세: internal/runner/runner.go
 ---
-# runner/runner.go #internal/runner
+# runner/runner.go #internal/runner #전지성
 
 > Nuclei 실행에 필요한 구성요소를 초기화하고 전체 스캔 순서를 관리하는 코드
 

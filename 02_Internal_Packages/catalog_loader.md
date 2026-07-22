@@ -3,7 +3,7 @@
 상태: false
 상세: pkg/catalog/loader/loader.go
 ---
-# catalog/loader.go #pkg/catalog/loader
+# catalog/loader.go #pkg/catalog/loader #전지성
 
 > Options와 Catalog를 이용하여 실제 실행할 템플릿을 선택하고 Template 객체로 불러오는 코드
 

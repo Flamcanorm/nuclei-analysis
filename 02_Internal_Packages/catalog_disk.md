@@ -3,7 +3,7 @@
 상태: false
 상세: pkg/catalog/disk
 ---
-# catalog/disk #pkg/catalog/disk
+# catalog/disk #pkg/catalog/disk #전지성
 
 > 디스크에서 Nuclei 템플릿 경로를 찾고 템플릿 파일을 여는 코드
 

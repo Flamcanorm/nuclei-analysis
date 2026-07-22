@@ -80,7 +80,7 @@ type Options struct {
 - **설명 :** Tags, Templates, Targets, Output, Debug, Timeout 등 Nuclei 실행 설정을 저장
 - **참조 :** [main_Functions](../01_Main_Flow/main_Functions.md), [goflags](../03_External_Packages/goflags.md)
 
-## 실행 구조도에서 사용하는 Options 필드
+## 실행 구조도에서 사용하는 Options 필드 #전지성
 
 사진의 Options 상자는 Nuclei의 수많은 설정 중 `Tags`, `Severity`, `OutputFile`만 단순화해 표시한 것이다. 실제 필드 이름과 타입은 다음과 같다.
 

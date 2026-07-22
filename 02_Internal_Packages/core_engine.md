@@ -3,7 +3,7 @@
 상태: false
 상세: pkg/core/engine.go
 ---
-# core/engine.go #pkg/core
+# core/engine.go #pkg/core #전지성
 
 > Loader가 준비한 템플릿과 InputProvider의 검사 대상을 받아 실제 스캔 실행을 관리하는 코드
 
