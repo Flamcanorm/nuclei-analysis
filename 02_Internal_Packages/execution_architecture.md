@@ -3,7 +3,8 @@
 상태: false
 상세: Runner, Options, Catalog, Loader, Engine 관계
 ---
-# Nuclei 실행 구성요소 관계 #architecture #전지성
+# Nuclei 실행 구성요소 관계
+#architecture #전지성
 
 > 클래스 다이어그램에서 인터페이스 부분을 제외하고 실제 Nuclei 소스에 맞게 수정한 전체 구조
 

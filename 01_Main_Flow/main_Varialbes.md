@@ -8,6 +8,7 @@
 > `main.go`에 선언되어 프로그램 전체에서 사용하는 변수
 
 ## options #박영현
+
 ```go
 	options                = &types.Options{}
 ```
