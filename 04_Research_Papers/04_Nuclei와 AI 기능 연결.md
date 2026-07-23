@@ -2,6 +2,10 @@
 
 #전지성 #Nuclei #AI #Matcher #ResultEvent #OutputWriter
 
+> [!info]- 논문 용어 바로가기
+> [[05_논문 전용 용어 사전#^term-ai-ml|AI·머신러닝]] · [[05_논문 전용 용어 사전#^term-ai-model|모델]] · [[05_논문 전용 용어 사전#^term-dataset|데이터셋]] · [[05_논문 전용 용어 사전#^term-label|레이블]] · [[05_논문 전용 용어 사전#^term-feature|특징]] · [[05_논문 전용 용어 사전#^term-preprocessing|전처리]] · [[05_논문 전용 용어 사전#^term-class-imbalance|데이터 불균형]]
+> [[05_논문 전용 용어 사전#^term-accuracy|정확도]] · [[05_논문 전용 용어 사전#^term-precision|정밀도]] · [[05_논문 전용 용어 사전#^term-recall|재현율]] · [[05_논문 전용 용어 사전#^term-f1-score|F1-score]] · [[05_논문 전용 용어 사전#^term-generalization|일반화]] · [[05_논문 전용 용어 사전#^term-reproducibility|재현성]]
+
 ## 선행연구의 흐름
 
 ```text
@@ -193,4 +197,3 @@ pkg/aiexplain/
 ## 연구 주제 문장
 
 > Nuclei의 Template과 Matcher가 생성한 탐지 결과를 유지하면서, 탐지 요청·응답과 Matcher 조건을 AI가 추가 분석하여 탐지 근거, 오탐 가능성 및 수동 검증 방법을 제공하는 설명 모듈을 제안한다.
-

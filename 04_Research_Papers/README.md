@@ -32,6 +32,12 @@
 4. [[04_Nuclei와 AI 기능 연결]]
    - 논문 내용을 Nuclei 구조 및 새로운 AI 기능 아이디어와 연결한다.
 
+5. [[05_논문 전용 용어 사전]]
+   - 논문, 보안 분석, AI와 성능 평가 용어를 초보자 기준으로 설명한다.
+
+> [!info]- 논문 용어 바로가기
+> [[05_논문 전용 용어 사전#^term-architecture|아키텍처]] · [[05_논문 전용 용어 사전#^term-sast|SAST]] · [[05_논문 전용 용어 사전#^term-dast|DAST]] · [[05_논문 전용 용어 사전#^term-hast|HAST]] · [[05_논문 전용 용어 사전#^term-lstm|LSTM]] · [[05_논문 전용 용어 사전#^term-false-positive-rate|오탐률]] · [[05_논문 전용 용어 사전#^term-false-negative-rate|미탐률]]
+
 ## 핵심 결론
 
 찾은 논문 중 Nuclei와 작동 방식이 가장 가까운 프로그램은 `Bitscanner`다.
@@ -59,4 +65,3 @@ AI 기반 동적 분석
 LSTM HAST
 └─ SAST·DAST·LSTM을 하나의 파이프라인으로 설계
 ```
-
