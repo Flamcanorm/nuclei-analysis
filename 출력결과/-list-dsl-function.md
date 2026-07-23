@@ -138,4 +138,4 @@
 
 - 기능과 코드 흐름: [-list-dsl-function 처음부터 이해하기](<../설명서/14_-list-dsl-function 상세.md>)
 - `main.go`의 실행 위치: [main.md L74](<../01_Main_Flow/main.md>)
-- 모든 결과 목록: [결과 폴더 안내](<README.md>)
+- 모든 결과 목록: [결과 폴더 안내](<설명서/README.md>)
