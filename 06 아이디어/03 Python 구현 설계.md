@@ -2,7 +2,7 @@
 
 ## 문서의 목적
 
-이 문서는 Nuclei의 구조를 참고한 라즈베리파이용 스캐너를 Python으로 어떻게 구현할지 설명한다. 아직 완성 프로그램을 만드는 단계가 아니라, 실제 개발 전에 모듈 경계와 실행 흐름을 결정하는 설계 문서다.
+이 문서는 라즈베리파이용 **독립 Python 스캐너**를 어떻게 구현할지 설명한다. Nuclei는 기존 스캐너의 구성 방식을 조사하기 위한 참고 자료일 뿐이며, 완성 프로그램에서 Nuclei 코드·CLI·DAST 서버·템플릿을 호출하거나 연동하지 않는다.
 
 첫 버전의 목표는 다음으로 제한한다.
 
@@ -10,9 +10,45 @@
 - HTTP/HTTPS와 기본 TCP 연결 검사
 - 비동기 작업 큐와 동시 실행 제한
 - SQLite에 상태와 결과 요약 저장
-- Nuclei CLI를 선택형 외부 엔진으로 호출
+- 자체 Python 검사 모듈과 자체 결과 형식 사용
 - 50GB 저장 공간을 고려한 로그 순환과 결과 보존
 - 허용된 IP/CIDR만 검사
+
+## 한눈에 보는 프로그램 구조
+
+```mermaid
+flowchart LR
+    U[사용자 또는 관리 화면] -->|스캔 요청| N[Nginx]
+    N -->|내부 전달| V[Uvicorn]
+    V --> F[FastAPI]
+
+    F -->|작업 등록| M[ScanManager]
+    M --> Q[(비동기 작업 큐)]
+    Q --> W[Scanner Worker]
+
+    W --> H[자체 HTTP 검사기]
+    W --> T[자체 TCP 검사기]
+    W --> S[자체 TLS 검사기]
+    W -. 이후 확장 .-> D[자체 DNS 검사기]
+
+    H --> R[공통 Finding 결과]
+    T --> R
+    S --> R
+    D --> R
+    R --> DB[(SQLite)]
+    F -->|상태와 결과 조회| DB
+
+    classDef entry fill:#dbeafe,stroke:#2563eb,color:#111827
+    classDef control fill:#ede9fe,stroke:#7c3aed,color:#111827
+    classDef scanner fill:#dcfce7,stroke:#16a34a,color:#111827
+    classDef storage fill:#fef3c7,stroke:#d97706,color:#111827
+    class U,N,V,F entry
+    class M,Q,W control
+    class H,T,S,D,R scanner
+    class DB storage
+```
+
+색상의 의미는 파란색이 웹 요청 처리, 보라색이 작업 관리, 초록색이 자체 검사 기능, 노란색이 저장소다. Nuclei나 ZAP은 실행 구조에 포함되지 않는다.
 
 ## 1. 권장 프로젝트 구조
 
@@ -33,7 +69,8 @@ scanner_project/
 │  │  ├─ base.py              # 모든 검사기의 공통 규격
 │  │  ├─ http_probe.py        # HTTP/HTTPS 검사
 │  │  ├─ tcp_probe.py         # TCP 연결·배너 검사
-│  │  └─ nuclei_runner.py     # Nuclei 프로세스 연동
+│  │  ├─ tls_probe.py         # TLS 인증서 검사
+│  │  └─ dns_probe.py         # 이후 추가할 DNS 검사
 │  ├─ repositories/
 │  │  └─ scans.py             # SQLite 읽기·쓰기
 │  ├─ db.py                   # DB 초기화와 연결
@@ -45,9 +82,42 @@ scanner_project/
 └─ .env.example
 ```
 
-API, 작업 관리, 검사 실행, DB 저장을 분리하면 한 파일이 지나치게 커지는 것을 막고 Nuclei나 ZAP 같은 엔진도 나중에 쉽게 추가할 수 있다.
+API, 작업 관리, 검사 실행, DB 저장을 분리하면 한 파일이 지나치게 커지는 것을 막고 자체 프로토콜 검사 기능을 독립적으로 확장할 수 있다.
 
 ## 2. 전체 실행 흐름
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as 사용자
+    participant API as FastAPI
+    participant Scope as 범위 검증
+    participant DB as SQLite
+    participant Queue as 작업 큐
+    participant Worker as Scanner Worker
+    participant Target as 허가된 대상
+
+    User->>API: POST /scans
+    API->>Scope: URL과 IP 허용 범위 확인
+    alt 허용 범위 밖
+        Scope-->>API: 거부
+        API-->>User: 400 또는 403
+    else 허용된 대상
+        Scope-->>API: 검사 가능
+        API->>DB: queued 작업 저장
+        API->>Queue: scan_id 등록
+        API-->>User: 202와 scan_id
+        Queue->>Worker: 작업 전달
+        Worker->>DB: running으로 변경
+        Worker->>Target: 제한된 검사 요청
+        Target-->>Worker: 응답
+        Worker->>DB: Finding과 completed 저장
+        User->>API: GET /scans/{scan_id}
+        API->>DB: 상태와 결과 조회
+        DB-->>API: 완료 결과
+        API-->>User: JSON 응답
+    end
+```
 
 ```text
 POST /scans
@@ -132,7 +202,8 @@ from pydantic import AnyHttpUrl, BaseModel, Field
 class ScanType(StrEnum):
     HTTP = "http"
     TCP = "tcp"
-    NUCLEI = "nuclei"
+    TLS = "tls"
+    DNS = "dns"
 
 
 class ScanStatus(StrEnum):
@@ -188,7 +259,7 @@ async def resolve_allowed_ips(url: str, allowed_cidrs: list[str]):
 
 ## 7. 검사 결과 공통 형식
 
-직접 만든 검사와 Nuclei 결과를 한 화면에서 보여주려면 공통 모델로 변환해야 한다.
+HTTP, TCP, TLS 등 직접 만든 검사 결과를 한 화면에서 보여주려면 공통 모델로 변환해야 한다.
 
 ```python
 # app/schemas/finding.py
@@ -225,7 +296,7 @@ class Scanner(Protocol):
         ...
 ```
 
-HTTP, TCP, Nuclei 검사기가 모두 같은 `scan()` 형태를 사용하면 `ScanManager`는 내부 구현을 몰라도 선택한 검사기를 실행할 수 있다.
+HTTP, TCP, TLS, DNS 검사기가 모두 같은 `scan()` 형태를 사용하면 `ScanManager`는 내부 구현을 몰라도 선택한 검사기를 실행할 수 있다.
 
 ## 9. HTTP 검사기
 
@@ -368,58 +439,64 @@ CREATE TABLE findings (
 
 SQLite는 WAL 모드를 사용하고 쓰기 작업을 짧은 transaction으로 처리한다. 요청·응답 원문을 대량으로 DB에 넣지 않는다.
 
-## 15. Nuclei 연동 방식
+## 15. 자체 검사 엔진 구현
 
-첫 버전은 Nuclei DAST 서버보다 **스캔마다 Nuclei CLI를 별도 프로세스로 실행하는 방식**이 단순하다.
-
-```python
-import asyncio
-import json
-
-
-async def run_nuclei(target: str):
-    process = await asyncio.create_subprocess_exec(
-        "nuclei",
-        "-u", target,
-        "-jsonl",
-        "-silent",
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE,
-    )
-
-    assert process.stdout is not None
-    async for raw_line in process.stdout:
-        yield json.loads(raw_line)
-
-    exit_code = await process.wait()
-    if exit_code != 0:
-        raise RuntimeError("Nuclei 검사가 실패했습니다.")
-```
-
-보안상 다음을 지킨다.
-
-- `shell=True`를 사용하지 않는다.
-- 사용자가 임의의 CLI 옵션을 직접 전달하지 못하게 한다.
-- 서버에서 허용한 템플릿과 옵션만 선택하도록 한다.
-- 실행 시간 초과 시 프로세스를 종료하고 정리한다.
-- stderr 전체를 영구 저장하지 않고 제한된 오류 요약만 남긴다.
-- 실행 전에 대상을 동일한 scope 정책으로 검증한다.
-
-HTTP 요청을 지속적으로 수집해 퍼징해야 하는 단계가 되면 Nuclei DAST 서버를 `127.0.0.1`에만 실행하고 FastAPI가 내부 API를 호출하는 방식을 추가한다.
-
-## 16. OWASP ZAP 확장
-
-ZAP은 Nuclei DAST 서버 내부에 넣는 라이브러리가 아니다. 별도 프로세스 또는 컨테이너로 실행하고 FastAPI가 ZAP API를 호출한다.
+이 프로그램은 외부 스캐너를 호출하는 래퍼가 아니다. `ScanManager`가 직접 만든 Python 검사기를 선택하고 실행한다.
 
 ```text
-FastAPI ScanManager
-  -> Nuclei adapter
-  -> ZAP adapter
-  -> Python HTTP/TCP scanner
-  -> 모든 결과를 Finding으로 변환
+ScanManager
+  -> HttpScanner
+      -> 요청 작성
+      -> httpx로 전송
+      -> 응답 정규화
+      -> 검사 규칙 적용
+      -> Finding 반환
+  -> TcpScanner
+      -> asyncio로 연결
+      -> 연결 상태와 제한된 배너 확인
+      -> Finding 반환
+  -> TlsScanner
+      -> ssl로 연결
+      -> 인증서 정보 확인
+      -> Finding 반환
 ```
 
-ZAP은 자바 기반이고 상대적으로 무거우므로 라즈베리파이에서는 선택형 정밀 검사로 두고 동시에 하나의 작업만 실행하는 방향이 적합하다.
+검사기는 다음 책임만 갖는다.
+
+1. 검증된 대상과 옵션을 받는다.
+2. 제한된 네트워크 요청을 보낸다.
+3. 응답을 공통 형식으로 정리한다.
+4. 자체 규칙으로 결과를 판단한다.
+5. `Finding` 목록을 반환한다.
+
+대상 허용 범위, 작업 상태, 저장, 로그, 취소는 검사기 안에 중복 구현하지 않고 `ScanManager`와 공통 서비스가 담당한다.
+
+## 16. 자체 규칙과 템플릿
+
+첫 버전은 YAML 템플릿 엔진부터 만들지 않고 Python 함수로 소수의 규칙을 구현한다.
+
+```python
+def missing_security_headers(headers: dict[str, str]) -> list[str]:
+    required = {
+        "content-security-policy",
+        "x-content-type-options",
+    }
+    normalized = {name.lower() for name in headers}
+    return sorted(required - normalized)
+```
+
+규칙 수가 많아져 반복 구조가 확인된 뒤에만 자체 YAML 형식을 추가한다. YAML 구조는 이 프로그램의 요구사항에 맞게 새로 정의하며 Nuclei 템플릿 호환을 목표로 하지 않는다.
+
+```yaml
+id: missing-security-headers
+protocol: http
+checks:
+  - type: header-absent
+    name: content-security-policy
+    severity: low
+```
+
+템플릿을 도입할 때도 임의 Python, shell 명령, 파일 경로를 실행할 수 없게 한다. 허용된 필드와 검사 연산만 Pydantic 모델로 검증한다.
 
 ## 17. 로깅과 50GB 저장 공간
 
@@ -441,7 +518,7 @@ ZAP은 자바 기반이고 상대적으로 무거우므로 라즈베리파이에
 
 - 대기 중인 작업은 상태를 `cancelled`로 바꾸고 worker가 실행하지 않게 한다.
 - Python 검사에는 `asyncio.Event`를 전달해 반복 단계 사이에서 취소 여부를 확인한다.
-- Nuclei 프로세스는 먼저 정상 종료를 요청하고 제한 시간 내 끝나지 않으면 강제 종료한다.
+- 각 검사기는 반복 단계 사이에서 취소 신호를 확인하고 열어 둔 연결을 정리한다.
 - 프로그램 종료 시 새 작업 접수를 막고 실행 중인 작업과 DB transaction을 정리한다.
 
 ## 19. 테스트 방법
@@ -455,7 +532,7 @@ ZAP은 자바 기반이고 상대적으로 무거우므로 라즈베리파이에
 - 핵심 상태 전환: `queued -> running -> completed/failed/cancelled`
 - 범위 검증: 허용 IP, 차단 IP, redirect, DNS 변경 시험
 
-Nuclei 연동 시험에서는 실제 공격 템플릿을 외부 대상으로 실행하지 않고, 로컬 테스트 대상과 고정된 안전한 템플릿만 사용한다.
+검사 규칙 시험은 외부 대상을 사용하지 않고 로컬 테스트 서버와 고정된 모의 응답으로 수행한다.
 
 ## 20. 단계별 구현 순서
 
@@ -479,12 +556,12 @@ Nuclei 연동 시험에서는 실제 공격 템플릿을 외부 대상으로 실
 - 제한된 TCP 포트 연결 확인
 - 공통 Finding 변환
 
-### 4단계: Nuclei 연동
+### 4단계: 자체 검사 규칙
 
-- 안전하게 고정한 CLI 인자
-- JSONL 스트리밍 파싱
-- timeout과 프로세스 정리
-- 결과를 SQLite 형식으로 변환
+- HTTP 응답을 공통 모델로 정규화
+- 소수의 Python 검사 함수 구현
+- 결과를 공통 `Finding`과 SQLite 형식으로 변환
+- 로컬 테스트 서버와 모의 응답으로 검증
 
 ### 5단계: 운영 안정성
 
@@ -497,11 +574,10 @@ Nuclei 연동 시험에서는 실제 공격 템플릿을 외부 대상으로 실
 ### 6단계: 선택 확장
 
 - DNS, WebSocket, Raw HTTP
-- Nuclei DAST 서버
-- OWASP ZAP
+- 자체 YAML 규칙 형식
+- 규칙 버전과 호환성 관리
 - Scapy 기반 패킷 검사
 
 ## 최종 구현 원칙
 
 > FastAPI는 요청과 작업을 관리하고, ScanManager는 검사를 순서대로 실행하며, 각 Scanner는 하나의 검사 방식만 담당하고, SQLite는 상태와 요약 결과만 저장한다. 모든 대상은 실행 직전에 허용 범위를 확인하고 라즈베리파이의 자원을 넘지 않도록 큐·동시성·속도·시간·저장량을 제한한다.
-

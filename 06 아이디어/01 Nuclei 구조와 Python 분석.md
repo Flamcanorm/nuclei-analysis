@@ -193,8 +193,8 @@ Python에서는 `zip()`, `itertools.product()`와 generator를 사용한다. 모
 | ASGI 서버 | `uvicorn` | ASGI 애플리케이션을 실행하는 웹서버 | 네트워크의 HTTP 요청을 받아 FastAPI에 전달하고 응답을 돌려준다. |
 | 요청·템플릿 모델 | `pydantic` | 데이터를 검사하고 변환하는 모델 라이브러리 | 대상 주소, 포트, 스캔 옵션과 YAML 템플릿 구조가 올바른지 확인한다. |
 | 환경 설정 | `pydantic-settings` | 환경변수와 설정 파일을 Pydantic 모델로 읽는 라이브러리 | 포트, DB 경로, 동시 실행 수, API 키 등을 코드 밖에서 관리한다. |
-| YAML | `PyYAML` | YAML 문서를 파이썬 데이터로 읽고 쓰는 라이브러리 | Nuclei와 비슷한 YAML 스캔 템플릿을 불러온다. 신뢰하지 않는 YAML은 `safe_load()`로 읽는다. |
-| HTTP/HTTPS | `httpx` | 동기·비동기 HTTP 클라이언트 | 검사 대상에 HTTP 요청을 보내거나 Nuclei·ZAP의 API를 호출한다. |
+| YAML | `PyYAML` | YAML 문서를 파이썬 데이터로 읽고 쓰는 라이브러리 | 나중에 필요할 경우 자체 YAML 규칙을 불러온다. 신뢰하지 않는 YAML은 `safe_load()`로 읽는다. |
+| HTTP/HTTPS | `httpx` | 동기·비동기 HTTP 클라이언트 | 자체 검사기가 대상 장비에 제한된 HTTP 요청을 보낸다. |
 | 비동기 실행 | Python `asyncio` | 파이썬 표준 비동기 실행 도구 | 여러 네트워크 요청을 기다리는 동안 다른 요청을 처리하되 동시 실행 수를 제한한다. |
 | 속도 제한 | `aiolimiter` 또는 자체 token bucket | 일정 시간 동안 보낼 요청 수를 제한하는 도구 | 대상 장비와 라즈베리파이에 과부하가 생기지 않도록 초당 요청 수를 통제한다. |
 | HTML/XML | `lxml` | HTML·XML 파싱 및 XPath 처리 라이브러리 | 응답 문서에서 링크, 폼, 특정 요소나 값을 추출한다. |
@@ -211,7 +211,7 @@ Python에서는 `zip()`, `itertools.product()`와 generator를 사용한다. 모
 | 데이터 모델     | `Pydantic`          | 데이터 검증 도구     | IP, URL, 포트, 스캔 옵션 검사          |
 | 환경 설정      | `pydantic-settings` | 설정 관리 도구      | DB 경로, API 키, 동시 실행 수 관리       |
 | YAML       | `PyYAML`            | YAML 해석 도구    | 스캔 템플릿 파일을 읽음                  |
-| HTTP/HTTPS | `httpx`             | HTTP 클라이언트    | 대상 장비나 Nuclei·ZAP API 호출       |
+| HTTP/HTTPS | `httpx`             | HTTP 클라이언트    | 자체 검사기가 대상 장비에 HTTP 요청 전송     |
 | 비동기 실행     | `asyncio`           | 파이썬 표준 비동기 기능 | 여러 요청을 효율적으로 처리                |
 | 속도 제한      | `aiolimiter`        | 요청량 제한 도구     | 장비에 너무 많은 요청을 보내지 않게 함         |
 | HTML/XML   | `lxml`              | 문서 분석 도구      | HTML에서 링크, 폼, 값 추출             |
@@ -224,8 +224,9 @@ Python에서는 `zip()`, `itertools.product()`와 generator를 사용한다. 모
   -> Uvicorn: HTTP 연결 처리
       -> FastAPI: 제품 API와 작업 흐름
           -> Scanner worker: 직접 만든 검사
-          -> Nuclei: 템플릿/DAST 검사
-          -> OWASP ZAP: 선택형 웹 크롤링/검사
+              -> HTTP Scanner
+              -> TCP Scanner
+              -> TLS Scanner
           -> SQLite: 작업 상태와 결과 저장
 ```
 ### 프로토콜 확장
