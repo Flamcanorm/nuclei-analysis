@@ -230,16 +230,38 @@ Python에서는 `zip()`, `itertools.product()`와 generator를 사용한다. 모
 ```
 ### 프로토콜 확장
 
-| 프로토콜 | 권장 방식 |
-|---|---|
-| 일반 TCP | `asyncio.open_connection()` |
-| UDP | asyncio datagram API |
-| TLS 인증서 | 표준 `ssl` |
-| DNS | `dnspython`의 `dns.asyncresolver` |
-| WebSocket | `websockets.asyncio` |
-| IPv4/IPv6/CIDR | 표준 `ipaddress` |
-| Raw HTTP | asyncio socket와 `h11`을 사용하는 별도 executor |
-| 패킷/MAC/DHCP | 필요한 경우에만 `Scapy` |
+이 표는 전부 외부 라이브러리를 뜻하지 않는다. 파이썬에 기본 포함된 **표준 라이브러리**, 별도로 설치하는 **외부 라이브러리**, 그리고 이들을 조합하는 **구현 방식**이 섞여 있다.
+
+| 검사 영역          | 권장 도구·방식                          | 종류                  | 스캐너에서 하는 일                                                                           |
+| -------------- | --------------------------------- | ------------------- | ------------------------------------------------------------------------------------ |
+| 일반 TCP         | `asyncio.open_connection()`       | 파이썬 표준 기능           | 특정 IP와 포트에 비동기로 연결하고 데이터를 주고받는다. 포트 연결 확인이나 배너 수집에 사용할 수 있다.                         |
+| UDP            | `asyncio` datagram API            | 파이썬 표준 기능           | 연결 없이 UDP 패킷을 보내고 받는다. DNS, SNMP 같은 UDP 기반 프로토콜 검사에 활용한다.                            |
+| TLS 인증서        | `ssl`                             | 파이썬 표준 라이브러리        | HTTPS 서버와 TLS 연결을 만들고 인증서의 발급자, 대상 이름, 만료일 등을 확인한다.                                  |
+| DNS            | `dnspython`의 `dns.asyncresolver`  | 외부 라이브러리            | A, AAAA, MX, TXT 같은 DNS 레코드를 비동기로 조회한다.                                              |
+| WebSocket      | `websockets.asyncio`              | 외부 라이브러리            | WebSocket 서버에 연결해 메시지를 송수신하고 응답을 검사한다.                                               |
+| IPv4/IPv6/CIDR | `ipaddress`                       | 파이썬 표준 라이브러리        | IP 주소를 검증하고 특정 CIDR 범위에 속하는지 확인한다. 실제 패킷을 보내지는 않는다.                                  |
+| Raw HTTP       | `asyncio` socket + `h11` 또는 직접 구성 | 표준 기능과 외부 라이브러리의 조합 | 헤더와 본문을 세밀하게 제어해 HTTP/1.1 요청을 전송·분석한다. `h11`은 HTTP 메시지 처리를 돕지만 네트워크 연결 자체는 담당하지 않는다. |
+| 패킷/MAC/DHCP    | `Scapy`                           | 외부 라이브러리            | 낮은 수준의 패킷을 만들고 보내며 응답을 분석한다. 관리자 권한과 추가 OS 설정이 필요할 수 있다.                             |
+### 프로토콜 관련 용어
+
+|항목|종류|하는 일|
+|---|---|---|
+|`asyncio.open_connection()`|파이썬 기본 기능|TCP 포트에 비동기로 연결하고 데이터 송수신|
+|`asyncio` datagram API|파이썬 기본 기능|UDP 패킷 송수신|
+|`ssl`|파이썬 표준 라이브러리|TLS 연결과 인증서 만료일·발급자 확인|
+|`dnspython`|외부 라이브러리|DNS 레코드 조회|
+|`websockets`|외부 라이브러리|WebSocket 메시지 송수신|
+|`ipaddress`|파이썬 표준 라이브러리|IP 주소와 CIDR 범위 계산·검증|
+|`h11`|외부 라이브러리|낮은 수준의 HTTP/1.1 메시지 생성·분석|
+|`Scapy`|외부 라이브러리|패킷, MAC, ARP, DHCP 등 저수준 네트워크 처리|
+
+외부 패키지가 실제로 필요해졌을 때 다음과 같이 설치한다.
+
+```bash
+pip install dnspython websockets h11 scapy
+```
+
+첫 버전부터 전부 설치할 필요는 없다. HTTP 중심 MVP에는 `httpx`, `asyncio`, `ssl`, `ipaddress`부터 사용하고 DNS, Raw HTTP, 패킷 검사가 필요해질 때 해당 외부 라이브러리를 추가하는 편이 라즈베리파이 자원을 아끼기 좋다.
 
 ## Raspberry Pi용 단계별 범위
 
