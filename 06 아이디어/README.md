@@ -1,8 +1,5 @@
 # 독립 Python 스캐너 설계 문서
 
-> [!important] 이 폴더의 기준
-> 새 프로그램은 Nuclei를 호출하거나 호환하지 않는다. Nuclei 문서는 기존 스캐너의 구조를 이해하기 위한 참고 자료일 뿐이다. 실제 제품은 Raspberry Pi OS에서 자체 Python 모듈로 구현한다.
-
 ## 현재 상태
 
 - Raspberry Pi OS 설치 완료
