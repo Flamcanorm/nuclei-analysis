@@ -8,7 +8,7 @@
 
 ```mermaid
 flowchart LR
-    C[허용된 컴퓨터] -->|HTTP 또는 HTTPS| N[Nginx :80 또는 :443]
+    C[스캐너 관리자] -->|HTTP 또는 HTTPS| N[Nginx :80 또는 :443]
     N -->|내부 proxy| U[Uvicorn 127.0.0.1:8000]
     U --> F[FastAPI]
     F --> W[Scanner Worker]
@@ -28,12 +28,12 @@ flowchart LR
 
 ## 적용 전 확인 사항
 
-다음 항목이 모두 완료되기 전에는 LAN에 스캔 API를 공개하지 않는다.
+다음 항목이 모두 완료되기 전에는 다른 컴퓨터에서 스캔 API에 접근할 수 있게 하지 않는다.
 
 ```text
 [ ] /health 직접 호출 성공
 [ ] API 키 인증 적용
-[ ] 허용 CIDR 밖 대상 거부
+[ ] 승인되지 않은 웹 도메인과 차단 IP 거부
 [ ] queue 최대 크기 적용
 [ ] worker 정상 종료 확인
 [ ] SQLite 재시작 복구 확인
@@ -121,9 +121,9 @@ sudo systemctl reload nginx
 
 `nginx -t`가 실패하면 reload하지 않고 오류를 먼저 고친다.
 
-## 4. LAN에서 확인
+## 4. 관리 컴퓨터에서 확인
 
-허용된 같은 네트워크의 컴퓨터에서 호출한다.
+스캐너를 관리하도록 허용한 컴퓨터에서 라즈베리파이 API를 호출한다. 이 접속 경로는 검사 대상 웹사이트와 별개다.
 
 ```text
 http://라즈베리파이_IP/health
@@ -166,7 +166,7 @@ flowchart TD
 [ ] 재부팅 후 pi-scanner 자동 실행
 [ ] Uvicorn은 127.0.0.1에서만 수신
 [ ] Nginx 설정 검사 성공
-[ ] 허용된 LAN 장비에서 인증된 API 호출 성공
+[ ] 허용된 관리 컴퓨터에서 인증된 API 호출 성공
 [ ] 실패 시 systemd가 제한적으로 재시작
 [ ] journald와 SQLite가 정한 용량을 넘지 않음
 [ ] 인터넷에서 직접 접근할 수 없음
